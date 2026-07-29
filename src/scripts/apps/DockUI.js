@@ -6,7 +6,7 @@ let notebookInstance = null;
 
 /**
  * DockUI attaches a vertical column of native-styled control buttons to the right-hand sidebar (#sidebar).
- * Buttons stack vertically, adopt Foundry UI icon styling, and collapse/expand seamlessly with the sidebar.
+ * Buttons stack vertically, adopt Foundry UI icon styling, and adjust alignment seamlessly when sidebar opens or collapses.
  */
 export class DockUI {
   static renderSidebarButtons() {
@@ -20,7 +20,7 @@ export class DockUI {
       sidebar.appendChild(dock);
     }
 
-    // Build Vertical Stack
+    // Build Vertical Button Stack
     let html = `
       <button type="button" class="hm-sidebar-btn" id="hm-vertical-notebook" title="Detective Notebook" aria-label="Detective Notebook">
         <i class="fa-solid fa-book-skull"></i>

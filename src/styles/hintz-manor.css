@@ -15,16 +15,23 @@
   --hm-font-body: 'Signika', sans-serif;
 }
 
-/* Vertical Sidebar Dock (Stacks Vertically on Right-Hand Sidebar) */
+/* Vertical Sidebar Control Stack attached to #sidebar */
 #hintz-manor-vertical-dock {
   position: absolute;
-  top: 10px;
-  left: -44px;
+  top: 12px;
+  left: -42px;
   display: flex;
   flex-direction: column;
   gap: 6px;
   z-index: 60;
   pointer-events: auto;
+  transition: top 0.25s ease, left 0.25s ease;
+}
+
+/* Smooth alignment shift when sidebar is COLLAPSED (closed) */
+#sidebar.collapsed #hintz-manor-vertical-dock {
+  top: 42px;
+  left: -42px;
 }
 
 .hm-sidebar-btn {
