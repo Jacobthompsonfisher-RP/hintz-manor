@@ -2,7 +2,7 @@
 
 :root {
   --hm-bg-dark: #121016;
-  --hm-bg-panel: rgba(24, 20, 30, 0.92);
+  --hm-bg-panel: rgba(24, 20, 30, 0.94);
   --hm-border-gold: #c5a059;
   --hm-gold-light: #e6c885;
   --hm-crimson: #8b1e24;
@@ -15,42 +15,15 @@
   --hm-font-body: 'Signika', sans-serif;
 }
 
-/* Persistent On-Screen Dock */
-#hintz-manor-dock {
-  position: fixed;
-  top: 60px;
-  right: 310px;
-  z-index: 70;
-  display: flex;
-  gap: 0.5rem;
-  background: var(--hm-bg-panel);
-  backdrop-filter: var(--hm-blur-glass);
-  border: 1px solid var(--hm-border-gold);
-  padding: 0.4rem 0.8rem;
-  border-radius: 20px;
-  box-shadow: var(--hm-shadow-glass);
-}
-
-#hintz-manor-dock .hm-dock-btn {
-  background: rgba(40, 30, 50, 0.9);
-  border: 1px solid var(--hm-border-gold);
-  color: var(--hm-gold-light);
-  padding: 0.3rem 0.8rem;
-  border-radius: 15px;
-  cursor: pointer;
-  font-family: var(--hm-font-heading);
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+/* Native Sidebar Tab Button Accents */
+#sidebar-tabs .item.hintz-manor-tab {
+  color: var(--hm-gold-light) !important;
   transition: all 0.2s ease;
 }
 
-#hintz-manor-dock .hm-dock-btn:hover {
-  background: var(--hm-gold-light);
-  color: #121016;
-  font-weight: bold;
-  box-shadow: 0 0 10px rgba(230, 200, 133, 0.6);
+#sidebar-tabs .item.hintz-manor-tab:hover {
+  color: #ffffff !important;
+  text-shadow: 0 0 8px var(--hm-gold-light);
 }
 
 /* App Window & Scroll Containment */
@@ -151,7 +124,7 @@
   font-weight: bold;
 }
 
-/* Scrollable Containers for Matrix Tables & Notebook Sheets */
+/* Scrollable Sections */
 .hm-scrollable-section {
   max-height: 380px;
   overflow-y: auto;
@@ -188,7 +161,6 @@
   background: rgba(26, 21, 34, 0.6);
 }
 
-/* Suspect Status Cross-Off Buttons */
 .hm-status-btn {
   background: rgba(40, 30, 50, 0.8);
   border: 1px solid var(--hm-border-gold);
@@ -218,7 +190,7 @@
   opacity: 0.6;
 }
 
-/* Knowledge & Motive Cards */
+/* Knowledge Cards */
 .hm-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

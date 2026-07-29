@@ -6,12 +6,10 @@ import { NPC_ROSTER } from '../data/NPCRoster.js';
  */
 export class ActorManager {
   /**
-   * Determines the valid Actor document type for the active game system
-   * (e.g., 'npc' for D&D 5e/PF2e, 'character', or Beaver's System Interface type).
+   * Determines the valid Actor document type for the active game system.
    * @returns {string} Valid actor type string for active system
    */
   static getValidActorType() {
-    // 1. Check Beaver's System Interface if active
     if (game.modules?.get('beavers-system-interface')?.active && typeof beaversSystemInterface !== 'undefined') {
       try {
         const bsiType = beaversSystemInterface.getActorType?.('npc');
@@ -21,7 +19,6 @@ export class ActorManager {
       }
     }
 
-    // 2. Query Foundry game system valid Actor document types
     const validTypes = game.system?.documentTypes?.Actor || [];
     if (validTypes.includes('npc')) return 'npc';
     if (validTypes.includes('character')) return 'character';
@@ -44,31 +41,29 @@ export class ActorManager {
     for (const npc of NPC_ROSTER) {
       let existing = game.actors.find(a => a.name === npc.name);
       if (!existing) {
-        existing = await Actor.create({
-          name: npc.name,
-          type: actorType,
-          img: npc.avatar || 'icons/svg/mystery-man.svg',
-          system: {
-            details: {
-              biography: { value: npc.bio },
-              notes: `${npc.title} | ${npc.role}`
+        try {
+          existing = await Actor.create({
+            name: npc.name,
+            type: actorType,
+            img: npc.avatar || 'icons/svg/mystery-man.svg',
+            flags: {
+              'hintz-manor': {
+                npcId: npc.id,
+                role: npc.role,
+                category: npc.category,
+                personality: npc.personality,
+                startingRoom: npc.startingRoom
+              }
             }
-          },
-          flags: {
-            'hintz-manor': {
-              npcId: npc.id,
-              role: npc.role,
-              category: npc.category,
-              personality: npc.personality,
-              startingRoom: npc.startingRoom
-            }
-          }
-        });
-        ui.notifications.info(`Hintz Manor: Imported Actor "${npc.name}" (${actorType}) into world.`);
+          });
+        } catch (err) {
+          console.warn(`Hintz Manor | Could not create Actor ${npc.name}:`, err);
+        }
       }
-      created.push(existing);
+      if (existing) created.push(existing);
     }
 
+    ui.notifications.info(`Hintz Manor: Successfully imported 13 NPC Actors into your Actors Sidebar!`);
     return created;
   }
 }

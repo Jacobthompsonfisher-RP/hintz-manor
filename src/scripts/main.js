@@ -30,15 +30,20 @@ Hooks.once('init', () => {
 
 Hooks.once('ready', () => {
   console.log(`${HINTZ_MANOR.TITLE} | Ready! Engine active.`);
-  DockUI.renderDock();
+  DockUI.renderSidebarButtons();
 
   if (game.user.isGM) {
-    ui.notifications.info(`🔎 ${HINTZ_MANOR.TITLE} Engine Active! Use the top-right screen buttons or Token Controls to open GM Control Center.`);
+    ui.notifications.info(`🔎 ${HINTZ_MANOR.TITLE} Engine Active! Click the right-hand sidebar tab buttons to open GM Control Center.`);
   }
 });
 
-Hooks.on('renderSceneControls', () => {
-  DockUI.renderDock();
+// Render sidebar buttons whenever Foundry UI sidebar renders
+Hooks.on('renderSidebar', () => {
+  DockUI.renderSidebarButtons();
+});
+
+Hooks.on('renderSidebarTab', () => {
+  DockUI.renderSidebarButtons();
 });
 
 /**

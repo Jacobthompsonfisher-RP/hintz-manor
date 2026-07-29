@@ -1,4 +1,3 @@
-import { HINTZ_MANOR } from '../config.js';
 import { GMMysteryPanel } from './GMMysteryPanel.js';
 import { DetectiveNotebook } from './DetectiveNotebook.js';
 
@@ -6,42 +5,48 @@ let gmPanelInstance = null;
 let notebookInstance = null;
 
 /**
- * DockUI injects a persistent, sleek floating UI dock onto the screen
- * giving GMs and Players 1-click access to the Mystery Control Center and Notebook.
+ * DockUI integrates Hintz Manor control buttons directly into Foundry's right-hand sidebar tabs (#sidebar-tabs),
+ * adopting native Foundry UI styling, tooltips, and collapsing behavior.
  */
 export class DockUI {
-  static renderDock() {
-    if (document.getElementById('hintz-manor-dock')) return;
+  static renderSidebarButtons() {
+    const sidebarTabs = document.querySelector('#sidebar-tabs');
+    if (!sidebarTabs) return;
 
-    const dock = document.createElement('div');
-    dock.id = 'hintz-manor-dock';
+    // Check if notebook button already exists
+    if (!document.getElementById('hm-sidebar-notebook')) {
+      const notebookBtn = document.createElement('a');
+      notebookBtn.id = 'hm-sidebar-notebook';
+      notebookBtn.className = 'item hintz-manor-tab';
+      notebookBtn.setAttribute('data-tooltip', 'Detective Notebook');
+      notebookBtn.setAttribute('aria-label', 'Detective Notebook');
+      notebookBtn.innerHTML = '<i class="fa-solid fa-book-skull"></i>';
 
-    let html = `
-      <button type="button" class="hm-dock-btn" id="hm-dock-notebook" title="Open Detective Notebook">
-        <i class="fa-solid fa-book-skull"></i> Notebook
-      </button>
-    `;
+      notebookBtn.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        if (!notebookInstance) notebookInstance = new DetectiveNotebook();
+        notebookInstance.render(true);
+      });
 
-    if (game.user.isGM) {
-      html += `
-        <button type="button" class="hm-dock-btn" id="hm-dock-gm" title="Open GM Control Center">
-          <i class="fa-solid fa-masks-theater"></i> GM Mystery Panel
-        </button>
-      `;
+      sidebarTabs.appendChild(notebookBtn);
     }
 
-    dock.innerHTML = html;
-    document.body.appendChild(dock);
+    // Check if GM button already exists (GM only)
+    if (game.user.isGM && !document.getElementById('hm-sidebar-gm')) {
+      const gmBtn = document.createElement('a');
+      gmBtn.id = 'hm-sidebar-gm';
+      gmBtn.className = 'item hintz-manor-tab';
+      gmBtn.setAttribute('data-tooltip', 'GM Mystery Control Center');
+      gmBtn.setAttribute('aria-label', 'GM Mystery Control Center');
+      gmBtn.innerHTML = '<i class="fa-solid fa-masks-theater"></i>';
 
-    // Event Listeners
-    dock.querySelector('#hm-dock-notebook')?.addEventListener('click', () => {
-      if (!notebookInstance) notebookInstance = new DetectiveNotebook();
-      notebookInstance.render(true);
-    });
+      gmBtn.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        if (!gmPanelInstance) gmPanelInstance = new GMMysteryPanel();
+        gmPanelInstance.render(true);
+      });
 
-    dock.querySelector('#hm-dock-gm')?.addEventListener('click', () => {
-      if (!gmPanelInstance) gmPanelInstance = new GMMysteryPanel();
-      gmPanelInstance.render(true);
-    });
+      sidebarTabs.appendChild(gmBtn);
+    }
   }
 }

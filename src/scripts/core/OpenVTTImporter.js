@@ -22,13 +22,11 @@ export class OpenVTTImporter {
     const width = sizeX * ppg;
     const height = sizeY * ppg;
 
-    // Determine Scene Background Image (File Path or Base64 Data URL)
     let bgSrc = imagePath;
     if (!bgSrc && data.image) {
       bgSrc = data.image.startsWith('data:') ? data.image : `data:image/png;base64,${data.image}`;
     }
 
-    // 1. Build Wall & Door Documents
     const wallData = [];
 
     // Parse Line of Sight Walls
@@ -62,7 +60,7 @@ export class OpenVTTImporter {
       }
     }
 
-    // 2. Create Scene Document in Foundry V14 with Background Image
+    // Scene Document Payload with both V14 background.src and legacy img
     const sceneData = {
       name: sceneName,
       width,
@@ -71,6 +69,7 @@ export class OpenVTTImporter {
       background: {
         src: bgSrc
       },
+      img: bgSrc,
       grid: {
         size: ppg,
         type: CONST.GRID_TYPES.SQUARE,

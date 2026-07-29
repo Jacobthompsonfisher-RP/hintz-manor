@@ -1,8 +1,8 @@
 {
   "id": "hintz-manor",
   "title": "Hintz Manor - Clue-Style Mystery & Evidence Engine",
-  "description": "Transforms tactical map movement and turns into an automated Clue-style murder mystery engine with per-turn travel history, sightlines, semi-autonomous cascading NPC pathing, OpenVTT map importer, 13 NPC roster, Motive & Knowledge grids, persistent floating UI dock, Beaver's System Interface support, and interactive evidence deduction UI.",
-  "version": "1.0.8",
+  "description": "Transforms tactical map movement and turns into an automated Clue-style murder mystery engine with per-turn travel history, sightlines, semi-autonomous cascading NPC pathing, OpenVTT map importer, 13 NPC roster, Motive & Knowledge grids, native right-hand sidebar UI buttons, Beaver's System Interface support, and interactive evidence deduction UI.",
+  "version": "1.0.9",
   "compatibility": {
     "minimum": "14",
     "verified": "14.363"
