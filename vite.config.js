@@ -30,14 +30,16 @@ export default defineConfig({
   },
   plugins: [
     {
-      name: 'copy-manifest-and-templates',
+      name: 'copy-manifest-and-assets',
       writeBundle() {
-        // Ensure templates and module.json are copied to dist
         if (fs.existsSync('src/module.json')) {
           fs.copyFileSync('src/module.json', 'dist/module.json');
         }
         if (fs.existsSync('src/templates')) {
           fs.cpSync('src/templates', 'dist/templates', { recursive: true });
+        }
+        if (fs.existsSync('src/styles')) {
+          fs.cpSync('src/styles', 'dist/styles', { recursive: true });
         }
       }
     }

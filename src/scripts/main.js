@@ -1,3 +1,4 @@
+import '../styles/hintz-manor.css';
 import { HINTZ_MANOR } from './config.js';
 import { EvidenceStore } from './core/EvidenceStore.js';
 import { TrackingEngine } from './core/TrackingEngine.js';
