@@ -14,10 +14,25 @@ const movementPlanner = new NPCMovementPlanner();
 Hooks.once('init', () => {
   console.log(`${HINTZ_MANOR.TITLE} | Initializing Hintz Manor Clue Engine (Foundry V14)...`);
   EvidenceStore.registerSettings();
+
+  // Expose global API helper for macros / console access
+  game.hintzManor = {
+    openGM: () => {
+      if (!gmPanelInstance) gmPanelInstance = new GMMysteryPanel();
+      gmPanelInstance.render(true);
+    },
+    openNotebook: () => {
+      if (!notebookInstance) notebookInstance = new DetectiveNotebook();
+      notebookInstance.render(true);
+    }
+  };
 });
 
 Hooks.once('ready', () => {
   console.log(`${HINTZ_MANOR.TITLE} | Ready! Engine active.`);
+  if (game.user.isGM) {
+    ui.notifications.info(`🔎 ${HINTZ_MANOR.TITLE} Engine Active! Use Token Controls or type game.hintzManor.openGM() to open GM Control Center.`);
+  }
 });
 
 /**
@@ -62,13 +77,11 @@ Hooks.on('updateCombat', async (combat, updateData) => {
   const currentCombatant = combat.combatant;
   if (!currentCombatant) return;
 
-  // 1. Record Turn Snapshot (Position, Room, Raycast Sightlines)
   const logEntry = TrackingEngine.recordTurnSnapshot(currentCombatant);
 
   const token = currentCombatant.token;
   if (!token) return;
 
-  // 2. If current combatant is an NPC, evaluate cascading semi-autonomous movement rules
   const isNPC = !token.actor?.hasPlayerOwner;
   if (isNPC) {
     const coOccupants = TrackingEngine.getTokensInRoom(logEntry?.room, token.id);
@@ -89,7 +102,6 @@ Hooks.on('updateCombat', async (combat, updateData) => {
     }
   }
 
-  // 3. Evaluate Crime Isolation & Tool Criteria
   await CrimeEngine.evaluateCrimeOpportunity();
 });
 
