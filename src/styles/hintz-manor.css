@@ -1,0 +1,223 @@
+/* Hintz Manor Victorian Mystery & Evidence UI Styles - Foundry V14 */
+
+:root {
+  --hm-bg-dark: #121016;
+  --hm-bg-panel: rgba(24, 20, 30, 0.85);
+  --hm-border-gold: #c5a059;
+  --hm-gold-light: #e6c885;
+  --hm-crimson: #8b1e24;
+  --hm-crimson-light: #b92b33;
+  --hm-text-light: #e0d8cf;
+  --hm-text-muted: #9e9389;
+  --hm-shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+  --hm-blur-glass: blur(12px);
+  --hm-font-heading: 'Cinzel', 'Times New Roman', serif;
+  --hm-font-body: 'Signika', sans-serif;
+}
+
+.hintz-manor-app {
+  background: var(--hm-bg-panel) !important;
+  backdrop-filter: var(--hm-blur-glass) !important;
+  border: 1px solid var(--hm-border-gold) !important;
+  box-shadow: var(--hm-shadow-glass) !important;
+  color: var(--hm-text-light) !important;
+  font-family: var(--hm-font-body);
+  border-radius: 8px;
+}
+
+.hintz-manor-app .window-header {
+  background: linear-gradient(180deg, rgba(35, 28, 44, 0.9) 0%, rgba(20, 16, 26, 0.9) 100%);
+  border-bottom: 1px solid var(--hm-border-gold);
+  color: var(--hm-gold-light);
+  font-family: var(--hm-font-heading);
+}
+
+.hintz-manor-header {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed var(--hm-border-gold);
+}
+
+.hintz-manor-header h2 {
+  font-family: var(--hm-font-heading);
+  color: var(--hm-gold-light);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0;
+  font-size: 1.4rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.hintz-manor-subtitle {
+  font-size: 0.85rem;
+  color: var(--hm-text-muted);
+  font-style: italic;
+}
+
+/* Tabs Navigation */
+.hintz-manor-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(197, 160, 89, 0.3);
+}
+
+.hintz-manor-tabs .item {
+  padding: 0.5rem 1rem;
+  background: rgba(40, 32, 50, 0.6);
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+  color: var(--hm-text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hintz-manor-tabs .item:hover {
+  color: var(--hm-gold-light);
+  background: rgba(60, 48, 75, 0.8);
+}
+
+.hintz-manor-tabs .item.active {
+  color: var(--hm-gold-light);
+  background: rgba(30, 24, 40, 0.9);
+  border: 1px solid var(--hm-border-gold);
+  border-bottom: 1px solid transparent;
+  font-weight: bold;
+}
+
+/* Deduction Grid / Matrix Table */
+.hm-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.hm-matrix-table th {
+  background: rgba(30, 22, 38, 0.9);
+  color: var(--hm-gold-light);
+  font-family: var(--hm-font-heading);
+  padding: 0.6rem;
+  border: 1px solid rgba(197, 160, 89, 0.4);
+  text-align: left;
+}
+
+.hm-matrix-table td {
+  padding: 0.5rem;
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  background: rgba(20, 16, 26, 0.4);
+}
+
+.hm-matrix-table tr:nth-child(even) td {
+  background: rgba(26, 21, 34, 0.6);
+}
+
+.hm-status-btn {
+  background: rgba(40, 30, 50, 0.8);
+  border: 1px solid var(--hm-border-gold);
+  color: var(--hm-text-light);
+  padding: 0.2rem 0.6rem;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.hm-status-btn:hover {
+  background: var(--hm-gold-light);
+  color: #121016;
+  font-weight: bold;
+}
+
+.hm-status-btn.eliminated {
+  background: rgba(139, 30, 36, 0.4);
+  border-color: var(--hm-crimson-light);
+  color: #ff9999;
+  text-decoration: line-through;
+}
+
+.hm-status-btn.suspect {
+  background: rgba(197, 160, 89, 0.3);
+  border-color: var(--hm-gold-light);
+  color: var(--hm-gold-light);
+}
+
+/* Evidence Logs */
+.hm-log-entry {
+  background: rgba(25, 20, 32, 0.7);
+  border-left: 3px solid var(--hm-border-gold);
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0 4px 4px 0;
+}
+
+.hm-log-entry.crime {
+  border-left-color: var(--hm-crimson-light);
+  background: rgba(40, 15, 20, 0.8);
+}
+
+.hm-log-entry .hm-log-title {
+  font-weight: bold;
+  color: var(--hm-gold-light);
+  display: flex;
+  justify-content: space-between;
+}
+
+.hm-log-entry .hm-log-body {
+  font-size: 0.9rem;
+  color: var(--hm-text-light);
+  margin-top: 0.2rem;
+}
+
+/* Controls & Buttons */
+.hm-btn-primary {
+  background: linear-gradient(180deg, #8b1e24 0%, #5d1217 100%);
+  color: #ffffff;
+  border: 1px solid var(--hm-border-gold);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-family: var(--hm-font-heading);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hm-btn-primary:hover {
+  background: linear-gradient(180deg, #b92b33 0%, #7c181d 100%);
+  box-shadow: 0 0 10px rgba(185, 43, 51, 0.6);
+}
+
+.hm-btn-secondary {
+  background: rgba(45, 35, 55, 0.8);
+  color: var(--hm-gold-light);
+  border: 1px solid rgba(197, 160, 89, 0.5);
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.hm-btn-secondary:hover {
+  background: rgba(70, 55, 85, 0.9);
+  border-color: var(--hm-gold-light);
+}
+
+/* Form Groups */
+.hm-form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.hm-form-group label {
+  color: var(--hm-gold-light);
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.hm-form-group input, .hm-form-group select {
+  background: rgba(15, 12, 20, 0.8);
+  border: 1px solid rgba(197, 160, 89, 0.4);
+  color: var(--hm-text-light);
+  padding: 0.4rem;
+  border-radius: 4px;
+}

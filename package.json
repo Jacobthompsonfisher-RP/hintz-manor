@@ -1,0 +1,25 @@
+{
+  "name": "hintz-manor",
+  "version": "1.0.0",
+  "description": "A Clue-inspired murder mystery and automated evidence/movement engine for FoundryVTT (V14).",
+  "main": "dist/scripts/main.js",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "foundryvtt",
+    "foundry-module",
+    "clue",
+    "murder-mystery",
+    "evidence-tracker",
+    "v14"
+  ],
+  "author": "Hintz Manor Development Team",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

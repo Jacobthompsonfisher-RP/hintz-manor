@@ -1,0 +1,25 @@
+{
+  "id": "hintz-manor",
+  "title": "Hintz Manor - Clue-Style Mystery & Evidence Engine",
+  "description": "Transforms tactical map movement and turns into an automated Clue-style murder mystery engine with per-turn travel history, sightlines, semi-autonomous cascading NPC pathing, and interactive evidence deduction UI.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14.363"
+  },
+  "authors": [
+    {
+      "name": "Hintz Manor Engineering Team",
+      "url": "https://github.com/user/hintz-manor"
+    }
+  ],
+  "esmodules": [
+    "scripts/main.js"
+  ],
+  "styles": [
+    "styles/hintz-manor.css"
+  ],
+  "url": "https://github.com/user/hintz-manor",
+  "manifest": "https://github.com/user/hintz-manor/releases/latest/download/module.json",
+  "download": "https://github.com/user/hintz-manor/releases/latest/download/module.zip"
+}
