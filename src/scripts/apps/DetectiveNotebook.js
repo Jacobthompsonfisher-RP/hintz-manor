@@ -1,6 +1,7 @@
 import { HINTZ_MANOR } from '../config.js';
 import { EvidenceStore } from '../core/EvidenceStore.js';
 import { RegionManager } from '../core/RegionManager.js';
+import { NPC_ROSTER } from '../data/NPCRoster.js';
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -18,8 +19,8 @@ export class DetectiveNotebook extends HandlebarsApplicationMixin(ApplicationV2)
       resizable: true
     },
     position: {
-      width: 700,
-      height: 600
+      width: 750,
+      height: 650
     },
     actions: {
       toggleElimination: DetectiveNotebook._onToggleElimination,
@@ -38,11 +39,10 @@ export class DetectiveNotebook extends HandlebarsApplicationMixin(ApplicationV2)
     const mysteryState = game.settings.get(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.MYSTERY_STATE) || {};
     const turnLogs = game.settings.get(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.TURN_LOGS) || [];
 
-    const suspects = canvas.tokens?.placeables.map(t => t.name) || ['Col. Mustard', 'Prof. Plum', 'Miss Scarlet', 'Mrs. Peacock'];
-    const weapons = ['Candlestick', 'Dagger', 'Lead Pipe', 'Revolver', 'Rope', 'Wrench'];
+    const suspects = NPC_ROSTER.map(c => c.name);
+    const weapons = ['Candlestick', 'Dagger', 'Lead Pipe', 'Revolver', 'Rope', 'Wrench', 'Poison Vial'];
     const rooms = RegionManager.getAllRooms();
 
-    // Map suspects, weapons, rooms with user's cross-off state
     const suspectItems = suspects.map(name => ({
       name,
       isEliminated: notebook.eliminatedSuspects?.includes(name)
@@ -63,14 +63,14 @@ export class DetectiveNotebook extends HandlebarsApplicationMixin(ApplicationV2)
       suspectItems,
       weaponItems,
       roomItems,
-      turnLogs: turnLogs.slice(-20).reverse(), // Latest 20 turn logs for player investigation
+      turnLogs: turnLogs.slice(-20).reverse(),
       isCrimeCommitted: mysteryState.status === HINTZ_MANOR.STATUS.CRIME_COMMITTED
     };
   }
 
   static async _onToggleElimination(event, target) {
     event.preventDefault();
-    const type = target.dataset.type; // 'suspect', 'weapon', or 'room'
+    const type = target.dataset.type;
     const name = target.dataset.name;
 
     const notebook = EvidenceStore.getPlayerNotebook();
@@ -119,7 +119,7 @@ export class DetectiveNotebook extends HandlebarsApplicationMixin(ApplicationV2)
     if (isCorrect) {
       ui.notifications.info(`🎉 ACCUSATION CORRECT! ${game.user.name} solved the mystery! ${killerName} committed the crime in the ${room} with the ${weapon}!`);
     } else {
-      ui.notifications.error(`❌ INCORRECT ACCUSATION! Your deduction was flawed. ${game.user.name}'s claim was proven false!`);
+      ui.notifications.error(`❌ INCORRECT ACCUSATION! ${game.user.name}'s claim was proven false!`);
     }
   }
 }

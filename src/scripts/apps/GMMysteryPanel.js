@@ -1,28 +1,32 @@
 import { HINTZ_MANOR } from '../config.js';
+import { NPC_ROSTER } from '../data/NPCRoster.js';
+import { MotiveGenerator } from '../core/MotiveGenerator.js';
 import { RegionManager } from '../core/RegionManager.js';
+import { OpenVTTImporter } from '../core/OpenVTTImporter.js';
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 /**
- * GMMysteryPanel provides the GM interface for mystery setup, role assignment,
- * weapon placement, and crime timeline monitoring in Foundry V14.
+ * GMMysteryPanel provides the GM interface for mystery setup, NPC roster management,
+ * OpenVTT map importing, role assignment, and crime timeline monitoring in Foundry V14.
  */
 export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
     id: 'hintz-manor-gm-panel',
     tag: 'form',
     window: {
-      title: 'Hintz Manor - GM Control Panel',
+      title: 'Hintz Manor - GM Control Center',
       icon: 'fa-solid fa-masks-theater',
       resizable: true
     },
     position: {
-      width: 680,
-      height: 580
+      width: 750,
+      height: 650
     },
     actions: {
       initializeMystery: GMMysteryPanel._onInitializeMystery,
-      placeWeapon: GMMysteryPanel._onPlaceWeapon,
+      randomizeMystery: GMMysteryPanel._onRandomizeMystery,
+      importOpenVTTMaps: GMMysteryPanel._onImportOpenVTTMaps,
       resetMystery: GMMysteryPanel._onResetMystery
     }
   };
@@ -39,12 +43,13 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
 
     const sceneTokens = canvas.tokens?.placeables.map(t => ({ id: t.id, name: t.name })) || [];
     const rooms = RegionManager.getAllRooms();
-    const defaultWeapons = ['Candlestick', 'Dagger', 'Lead Pipe', 'Revolver', 'Rope', 'Wrench'];
+    const defaultWeapons = ['Candlestick', 'Dagger', 'Lead Pipe', 'Revolver', 'Rope', 'Wrench', 'Poison Vial'];
 
     return {
       mysteryState,
-      turnLogs: turnLogs.slice(-15).reverse(), // Show latest 15 turn logs
+      turnLogs: turnLogs.slice(-15).reverse(),
       tokens: sceneTokens,
+      npcRoster: NPC_ROSTER,
       rooms,
       defaultWeapons,
       isSetup: mysteryState.status === HINTZ_MANOR.STATUS.SETUP,
@@ -65,14 +70,7 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
       return;
     }
 
-    if (killerId === victimId) {
-      ui.notifications.error(`${HINTZ_MANOR.TITLE}: Killer and Victim cannot be the same character!`);
-      return;
-    }
-
     const rooms = RegionManager.getAllRooms();
-
-    // Assign weapons to rooms
     const roomWeaponLocations = {
       [requiredWeapon]: rooms[Math.floor(Math.random() * rooms.length)]
     };
@@ -88,8 +86,64 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
     };
 
     await game.settings.set(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.MYSTERY_STATE, newState);
-    ui.notifications.info(`${HINTZ_MANOR.TITLE}: Mystery initialized! The secret killer has been set.`);
+    ui.notifications.info(`${HINTZ_MANOR.TITLE}: Mystery initialized! The secret killer is set.`);
     this.render();
+  }
+
+  static async _onRandomizeMystery(event, target) {
+    event.preventDefault();
+
+    const scenario = MotiveGenerator.generateScenario('lord-hintz');
+    const rooms = RegionManager.getAllRooms();
+
+    const roomWeaponLocations = {
+      [scenario.requiredWeapon]: rooms[Math.floor(Math.random() * rooms.length)]
+    };
+
+    const newState = {
+      status: HINTZ_MANOR.STATUS.IN_PROGRESS,
+      killerId: scenario.killerId,
+      killerName: scenario.killerName,
+      victimId: scenario.victimId,
+      victimName: scenario.victimName,
+      requiredWeapon: scenario.requiredWeapon,
+      motives: scenario.characterMotives,
+      alliances: scenario.alliances,
+      rivalries: scenario.rivalries,
+      rooms,
+      roomWeaponLocations,
+      solution: null
+    };
+
+    await game.settings.set(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.MYSTERY_STATE, newState);
+    await game.settings.set(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.TURN_LOGS, []);
+
+    ui.notifications.info(`🎲 ${HINTZ_MANOR.TITLE}: Full Mystery Reset! Killer, Motives, and Weapon placements have been randomized!`);
+    this.render();
+  }
+
+  static async _onImportOpenVTTMaps(event, target) {
+    event.preventDefault();
+    ui.notifications.info(`${HINTZ_MANOR.TITLE}: Importing pre-built OpenVTT map scenes (Hintz1f, Hintz2fa, HintzBasement, HintzRoof)...`);
+
+    const mapFiles = [
+      { name: 'Hintz Manor 1F (Ground Floor)', file: 'modules/hintz-manor/assets/maps/Hintz1f.dd2vtt' },
+      { name: 'Hintz Manor 2F (Upper Floor)', file: 'modules/hintz-manor/assets/maps/Hintz2fa.dd2vtt' },
+      { name: 'Hintz Manor Basement', file: 'modules/hintz-manor/assets/maps/HintzBasement.dd2vtt' },
+      { name: 'Hintz Manor Roof', file: 'modules/hintz-manor/assets/maps/HintzRoof.dd2vtt' }
+    ];
+
+    for (const map of mapFiles) {
+      try {
+        const response = await fetch(map.file);
+        if (response.ok) {
+          const vttJson = await response.json();
+          await OpenVTTImporter.importMap(map.name, vttJson);
+        }
+      } catch (err) {
+        console.warn(`Could not import map ${map.file}:`, err);
+      }
+    }
   }
 
   static async _onResetMystery(event, target) {
@@ -102,7 +156,7 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
       solution: null
     });
     await game.settings.set(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.TURN_LOGS, []);
-    ui.notifications.info(`${HINTZ_MANOR.TITLE}: Mystery state reset to initial setup.`);
+    ui.notifications.info(`${HINTZ_MANOR.TITLE}: Mystery state reset.`);
     this.render();
   }
 }

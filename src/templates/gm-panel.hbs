@@ -1,20 +1,28 @@
 <div class="hintz-manor-app">
   <div class="hintz-manor-header">
-    <h2><i class="fa-solid fa-masks-theater"></i> GM Mystery Control Panel</h2>
-    <div class="hintz-manor-subtitle">Manage scenario setup, secret roles, weapon placements, and crime logs</div>
+    <h2><i class="fa-solid fa-masks-theater"></i> GM Mystery Control Center</h2>
+    <div class="hintz-manor-subtitle">Manage scenario setup, 13 NPC roster, OpenVTT maps, and mystery resets</div>
+  </div>
+
+  <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+    <button type="button" class="hm-btn-primary" data-action="randomizeMystery">
+      <i class="fa-solid fa-dice"></i> 1-Click Game Reset & Randomize Mystery
+    </button>
+    <button type="button" class="hm-btn-secondary" data-action="importOpenVTTMaps">
+      <i class="fa-solid fa-map-location-dot"></i> Import OpenVTT Map Scenes (.dd2vtt)
+    </button>
   </div>
 
   {{#if isSetup}}
   <div class="hm-setup-section">
-    <h3><i class="fa-solid fa-user-secret"></i> Mystery Configuration</h3>
+    <h3><i class="fa-solid fa-user-secret"></i> Manual Scenario Configuration</h3>
     
     <div class="hm-form-group">
       <label>Secret Killer NPC:</label>
       <select name="killerId">
         <option value="">-- Select Killer --</option>
-        {{#each tokens}}
-        <option value="{{this.id}}">{{this.name}}</option>
-        {{#if @last}}{{/if}}
+        {{#each npcRoster}}
+        <option value="{{this.id}}">{{this.name}} ({{this.role}})</option>
         {{/each}}
       </select>
     </div>
@@ -22,8 +30,8 @@
     <div class="hm-form-group">
       <label>Victim Character:</label>
       <select name="victimId">
-        <option value="">-- Select Victim --</option>
-        {{#each tokens}}
+        <option value="lord-hintz">Lord Reginald Hintz (Host)</option>
+        {{#each npcRoster}}
         <option value="{{this.id}}">{{this.name}}</option>
         {{/each}}
       </select>
@@ -39,18 +47,18 @@
       </select>
     </div>
 
-    <button type="button" class="hm-btn-primary" data-action="initializeMystery">
-      <i class="fa-solid fa-skull"></i> Initialize Secret Mystery
+    <button type="button" class="hm-btn-secondary" data-action="initializeMystery">
+      <i class="fa-solid fa-skull"></i> Initialize Manual Mystery
     </button>
   </div>
   {{/if}}
 
   {{#if isInProgress}}
   <div class="hm-status-section">
-    <h3><i class="fa-solid fa-hourglass-half"></i> Investigation In Progress</h3>
+    <h3><i class="fa-solid fa-hourglass-half"></i> Mystery Active</h3>
     <p>The secret killer is roaming the manor. The engine will evaluate turn snapshots and trigger the crime event once isolation and tool criteria are met.</p>
     <button type="button" class="hm-btn-secondary" data-action="resetMystery">
-      <i class="fa-solid fa-rotate-left"></i> Reset Mystery
+      <i class="fa-solid fa-rotate-left"></i> Clear Mystery State
     </button>
   </div>
   {{/if}}
@@ -60,15 +68,32 @@
     <h3><i class="fa-solid fa-skull-crossbones"></i> CRIME COMMITTED!</h3>
     <p>Solution: <strong>{{mysteryState.solution.killerName}}</strong> in the <strong>{{mysteryState.solution.room}}</strong> with the <strong>{{mysteryState.solution.weapon}}</strong>!</p>
     <button type="button" class="hm-btn-secondary" data-action="resetMystery">
-      <i class="fa-solid fa-rotate-left"></i> Reset Mystery
+      <i class="fa-solid fa-rotate-left"></i> Clear Mystery State
     </button>
   </div>
   {{/if}}
 
   <hr style="border-color: var(--hm-border-gold); margin: 1rem 0;" />
 
+  <h3><i class="fa-solid fa-users"></i> 13-Character NPC Roster</h3>
+  <div class="hm-roster-grid" style="max-height: 180px; overflow-y: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
+    {{#each npcRoster}}
+    <div class="hm-log-entry">
+      <div class="hm-log-title">
+        <span>{{this.name}}</span>
+        <span style="font-size: 0.75rem; color: var(--hm-text-muted);">{{this.role}}</span>
+      </div>
+      <div class="hm-log-body" style="font-size: 0.8rem;">
+        {{this.title}} | Starts in: <em>{{this.startingRoom}}</em>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+
+  <hr style="border-color: var(--hm-border-gold); margin: 1rem 0;" />
+
   <h3><i class="fa-solid fa-list-check"></i> Turn & Sightline Audit History</h3>
-  <div class="hm-logs-list" style="max-height: 200px; overflow-y: auto;">
+  <div class="hm-logs-list" style="max-height: 140px; overflow-y: auto;">
     {{#each turnLogs}}
     <div class="hm-log-entry">
       <div class="hm-log-title">
@@ -76,7 +101,7 @@
         <span>Room: {{this.room}}</span>
       </div>
       <div class="hm-log-body">
-        Visible Characters: {{#if this.visibleTokenNames}}{{this.visibleTokenNames}}{{else}}None (Isolated){{/if}}
+        Sightlines: {{#if this.visibleTokenNames}}{{this.visibleTokenNames}}{{else}}None (Isolated){{/if}}
         {{#if this.coOccupantNames}} | Room Co-occupants: {{this.coOccupantNames}}{{/if}}
       </div>
     </div>

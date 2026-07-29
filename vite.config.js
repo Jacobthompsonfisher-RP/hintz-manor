@@ -41,6 +41,9 @@ export default defineConfig({
         if (fs.existsSync('src/styles')) {
           fs.cpSync('src/styles', 'dist/styles', { recursive: true });
         }
+        if (fs.existsSync('src/assets')) {
+          fs.cpSync('src/assets', 'dist/assets', { recursive: true });
+        }
       }
     }
   ]
