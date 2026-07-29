@@ -6,6 +6,7 @@ import { NPCMovementPlanner } from './core/NPCMovementPlanner.js';
 import { CrimeEngine } from './core/CrimeEngine.js';
 import { GMMysteryPanel } from './apps/GMMysteryPanel.js';
 import { DetectiveNotebook } from './apps/DetectiveNotebook.js';
+import { DockUI } from './apps/DockUI.js';
 
 let gmPanelInstance = null;
 let notebookInstance = null;
@@ -15,7 +16,6 @@ Hooks.once('init', () => {
   console.log(`${HINTZ_MANOR.TITLE} | Initializing Hintz Manor Clue Engine (Foundry V14)...`);
   EvidenceStore.registerSettings();
 
-  // Expose global API helper for macros / console access
   game.hintzManor = {
     openGM: () => {
       if (!gmPanelInstance) gmPanelInstance = new GMMysteryPanel();
@@ -30,9 +30,15 @@ Hooks.once('init', () => {
 
 Hooks.once('ready', () => {
   console.log(`${HINTZ_MANOR.TITLE} | Ready! Engine active.`);
+  DockUI.renderDock();
+
   if (game.user.isGM) {
-    ui.notifications.info(`🔎 ${HINTZ_MANOR.TITLE} Engine Active! Use Token Controls or type game.hintzManor.openGM() to open GM Control Center.`);
+    ui.notifications.info(`🔎 ${HINTZ_MANOR.TITLE} Engine Active! Use the top-right screen buttons or Token Controls to open GM Control Center.`);
   }
+});
+
+Hooks.on('renderSceneControls', () => {
+  DockUI.renderDock();
 });
 
 /**
@@ -78,7 +84,6 @@ Hooks.on('updateCombat', async (combat, updateData) => {
   if (!currentCombatant) return;
 
   const logEntry = TrackingEngine.recordTurnSnapshot(currentCombatant);
-
   const token = currentCombatant.token;
   if (!token) return;
 
