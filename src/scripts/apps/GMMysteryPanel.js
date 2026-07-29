@@ -124,13 +124,13 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static async _onImportOpenVTTMaps(event, target) {
     event.preventDefault();
-    ui.notifications.info(`${HINTZ_MANOR.TITLE}: Importing pre-built OpenVTT map scenes (Hintz1f, Hintz2fa, HintzBasement, HintzRoof)...`);
+    ui.notifications.info(`${HINTZ_MANOR.TITLE}: Importing pre-built OpenVTT map scenes with background images...`);
 
     const mapFiles = [
-      { name: 'Hintz Manor 1F (Ground Floor)', file: 'modules/hintz-manor/assets/maps/Hintz1f.dd2vtt' },
-      { name: 'Hintz Manor 2F (Upper Floor)', file: 'modules/hintz-manor/assets/maps/Hintz2fa.dd2vtt' },
-      { name: 'Hintz Manor Basement', file: 'modules/hintz-manor/assets/maps/HintzBasement.dd2vtt' },
-      { name: 'Hintz Manor Roof', file: 'modules/hintz-manor/assets/maps/HintzRoof.dd2vtt' }
+      { name: 'Hintz Manor 1F (Ground Floor)', file: 'modules/hintz-manor/assets/maps/Hintz1f.dd2vtt', img: 'modules/hintz-manor/assets/maps/Hintz1f.png' },
+      { name: 'Hintz Manor 2F (Upper Floor)', file: 'modules/hintz-manor/assets/maps/Hintz2fa.dd2vtt', img: 'modules/hintz-manor/assets/maps/Hintz2fa.png' },
+      { name: 'Hintz Manor Basement', file: 'modules/hintz-manor/assets/maps/HintzBasement.dd2vtt', img: 'modules/hintz-manor/assets/maps/HintzBasement.png' },
+      { name: 'Hintz Manor Roof', file: 'modules/hintz-manor/assets/maps/HintzRoof.dd2vtt', img: 'modules/hintz-manor/assets/maps/HintzRoof.png' }
     ];
 
     for (const map of mapFiles) {
@@ -138,7 +138,7 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
         const response = await fetch(map.file);
         if (response.ok) {
           const vttJson = await response.json();
-          await OpenVTTImporter.importMap(map.name, vttJson);
+          await OpenVTTImporter.importMap(map.name, vttJson, map.img);
         }
       } catch (err) {
         console.warn(`Could not import map ${map.file}:`, err);
