@@ -1,0 +1,85 @@
+<div class="hintz-manor-app">
+  <div class="hintz-manor-header">
+    <h2><i class="fa-solid fa-masks-theater"></i> GM Mystery Control Panel</h2>
+    <div class="hintz-manor-subtitle">Manage scenario setup, secret roles, weapon placements, and crime logs</div>
+  </div>
+
+  {{#if isSetup}}
+  <div class="hm-setup-section">
+    <h3><i class="fa-solid fa-user-secret"></i> Mystery Configuration</h3>
+    
+    <div class="hm-form-group">
+      <label>Secret Killer NPC:</label>
+      <select name="killerId">
+        <option value="">-- Select Killer --</option>
+        {{#each tokens}}
+        <option value="{{this.id}}">{{this.name}}</option>
+        {{#if @last}}{{/if}}
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="hm-form-group">
+      <label>Victim Character:</label>
+      <select name="victimId">
+        <option value="">-- Select Victim --</option>
+        {{#each tokens}}
+        <option value="{{this.id}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="hm-form-group">
+      <label>Required Crime Weapon / Tool:</label>
+      <select name="requiredWeapon">
+        <option value="">-- Select Weapon --</option>
+        {{#each defaultWeapons}}
+        <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <button type="button" class="hm-btn-primary" data-action="initializeMystery">
+      <i class="fa-solid fa-skull"></i> Initialize Secret Mystery
+    </button>
+  </div>
+  {{/if}}
+
+  {{#if isInProgress}}
+  <div class="hm-status-section">
+    <h3><i class="fa-solid fa-hourglass-half"></i> Investigation In Progress</h3>
+    <p>The secret killer is roaming the manor. The engine will evaluate turn snapshots and trigger the crime event once isolation and tool criteria are met.</p>
+    <button type="button" class="hm-btn-secondary" data-action="resetMystery">
+      <i class="fa-solid fa-rotate-left"></i> Reset Mystery
+    </button>
+  </div>
+  {{/if}}
+
+  {{#if isCrimeCommitted}}
+  <div class="hm-status-section hm-crime-alert">
+    <h3><i class="fa-solid fa-skull-crossbones"></i> CRIME COMMITTED!</h3>
+    <p>Solution: <strong>{{mysteryState.solution.killerName}}</strong> in the <strong>{{mysteryState.solution.room}}</strong> with the <strong>{{mysteryState.solution.weapon}}</strong>!</p>
+    <button type="button" class="hm-btn-secondary" data-action="resetMystery">
+      <i class="fa-solid fa-rotate-left"></i> Reset Mystery
+    </button>
+  </div>
+  {{/if}}
+
+  <hr style="border-color: var(--hm-border-gold); margin: 1rem 0;" />
+
+  <h3><i class="fa-solid fa-list-check"></i> Turn & Sightline Audit History</h3>
+  <div class="hm-logs-list" style="max-height: 200px; overflow-y: auto;">
+    {{#each turnLogs}}
+    <div class="hm-log-entry">
+      <div class="hm-log-title">
+        <span>Round {{this.round}} - Turn {{this.turn}}: {{this.actorName}}</span>
+        <span>Room: {{this.room}}</span>
+      </div>
+      <div class="hm-log-body">
+        Visible Characters: {{#if this.visibleTokenNames}}{{this.visibleTokenNames}}{{else}}None (Isolated){{/if}}
+        {{#if this.coOccupantNames}} | Room Co-occupants: {{this.coOccupantNames}}{{/if}}
+      </div>
+    </div>
+    {{/each}}
+  </div>
+</div>
