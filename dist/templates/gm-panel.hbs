@@ -1,12 +1,33 @@
 <div class="hintz-manor-app">
   <div class="hintz-manor-header">
     <h2><i class="fa-solid fa-masks-theater"></i> GM Mystery Control Center</h2>
-    <div class="hintz-manor-subtitle">Manage scenario setup, 13 NPC roster, OpenVTT maps, and mystery resets</div>
+    <div class="hintz-manor-subtitle">Manage scenario setup, Motive grids, NPC Knowledge, and map imports</div>
   </div>
 
-  <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+  <!-- Navigation Tabs -->
+  <div class="hm-tab-nav">
+    <button type="button" class="hm-tab-btn {{#if isSetupTab}}active{{/if}}" data-action="switchTab" data-tab="setup">
+      <i class="fa-solid fa-sliders"></i> Mystery Setup & Quick-Actions
+    </button>
+    <button type="button" class="hm-tab-btn {{#if isMotivesTab}}active{{/if}}" data-action="switchTab" data-tab="motives">
+      <i class="fa-solid fa-diagram-project"></i> Motive & Relationship Grid
+    </button>
+    <button type="button" class="hm-tab-btn {{#if isKnowledgeTab}}active{{/if}}" data-action="switchTab" data-tab="knowledge">
+      <i class="fa-solid fa-brain"></i> NPC Knowledge & Travel Grid
+    </button>
+    <button type="button" class="hm-tab-btn {{#if isRosterTab}}active{{/if}}" data-action="switchTab" data-tab="roster">
+      <i class="fa-solid fa-users"></i> 13 NPC Cast
+    </button>
+  </div>
+
+  <!-- TAB 1: SETUP & QUICK ACTIONS -->
+  {{#if isSetupTab}}
+  <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
     <button type="button" class="hm-btn-primary" data-action="randomizeMystery">
-      <i class="fa-solid fa-dice"></i> 1-Click Game Reset & Randomize Mystery
+      <i class="fa-solid fa-dice"></i> 1-Click Reset & Randomize Mystery
+    </button>
+    <button type="button" class="hm-btn-secondary" data-action="importActors">
+      <i class="fa-solid fa-user-plus"></i> Import 13 NPCs to Actors Panel
     </button>
     <button type="button" class="hm-btn-secondary" data-action="importOpenVTTMaps">
       <i class="fa-solid fa-map-location-dot"></i> Import OpenVTT Map Scenes (.dd2vtt)
@@ -15,7 +36,7 @@
 
   {{#if isSetup}}
   <div class="hm-setup-section">
-    <h3><i class="fa-solid fa-user-secret"></i> Manual Scenario Configuration</h3>
+    <h3><i class="fa-solid fa-user-secret"></i> Manual Scenario Setup</h3>
     
     <div class="hm-form-group">
       <label>Secret Killer NPC:</label>
@@ -55,8 +76,8 @@
 
   {{#if isInProgress}}
   <div class="hm-status-section">
-    <h3><i class="fa-solid fa-hourglass-half"></i> Mystery Active</h3>
-    <p>The secret killer is roaming the manor. The engine will evaluate turn snapshots and trigger the crime event once isolation and tool criteria are met.</p>
+    <h3><i class="fa-solid fa-hourglass-half"></i> Investigation Active</h3>
+    <p>The secret killer is roaming the manor. Per-turn movement snapshots will evaluate tool collection and isolation opportunity.</p>
     <button type="button" class="hm-btn-secondary" data-action="resetMystery">
       <i class="fa-solid fa-rotate-left"></i> Clear Mystery State
     </button>
@@ -74,26 +95,8 @@
   {{/if}}
 
   <hr style="border-color: var(--hm-border-gold); margin: 1rem 0;" />
-
-  <h3><i class="fa-solid fa-users"></i> 13-Character NPC Roster</h3>
-  <div class="hm-roster-grid" style="max-height: 180px; overflow-y: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
-    {{#each npcRoster}}
-    <div class="hm-log-entry">
-      <div class="hm-log-title">
-        <span>{{this.name}}</span>
-        <span style="font-size: 0.75rem; color: var(--hm-text-muted);">{{this.role}}</span>
-      </div>
-      <div class="hm-log-body" style="font-size: 0.8rem;">
-        {{this.title}} | Starts in: <em>{{this.startingRoom}}</em>
-      </div>
-    </div>
-    {{/each}}
-  </div>
-
-  <hr style="border-color: var(--hm-border-gold); margin: 1rem 0;" />
-
   <h3><i class="fa-solid fa-list-check"></i> Turn & Sightline Audit History</h3>
-  <div class="hm-logs-list" style="max-height: 140px; overflow-y: auto;">
+  <div class="hm-scrollable-section">
     {{#each turnLogs}}
     <div class="hm-log-entry">
       <div class="hm-log-title">
@@ -102,9 +105,73 @@
       </div>
       <div class="hm-log-body">
         Sightlines: {{#if this.visibleTokenNames}}{{this.visibleTokenNames}}{{else}}None (Isolated){{/if}}
-        {{#if this.coOccupantNames}} | Room Co-occupants: {{this.coOccupantNames}}{{/if}}
+        {{#if this.coOccupantNames}} | Co-occupants: {{this.coOccupantNames}}{{/if}}
       </div>
     </div>
     {{/each}}
   </div>
+  {{/if}}
+
+  <!-- TAB 2: MOTIVE & RELATIONSHIP GRID -->
+  {{#if isMotivesTab}}
+  <h3><i class="fa-solid fa-diagram-project"></i> Secret Motives & Relationship Web</h3>
+  <p style="font-size: 0.85rem; color: var(--hm-text-muted);">Generated automatically on Game Reset. Alliances boost NPC co-travel odds.</p>
+
+  <div class="hm-card-grid">
+    {{#each motivesList}}
+    <div class="hm-card">
+      <div class="hm-card-header">
+        <span>{{this.name}}</span>
+        <span style="font-size: 0.75rem; color: var(--hm-text-muted);">{{this.role}}</span>
+      </div>
+      <div style="font-size: 0.85rem;">
+        <div><strong>Motive:</strong> {{this.motive}}</div>
+        <div style="color: var(--hm-text-muted); font-style: italic; margin-top: 0.2rem;">{{this.secret}}</div>
+        {{#if this.isKiller}}<div style="color: var(--hm-crimson-light); font-weight: bold; margin-top: 0.4rem;">⚠️ SECRET KILLER</div>{{/if}}
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  {{/if}}
+
+  <!-- TAB 3: NPC KNOWLEDGE & TRAVEL GRID -->
+  {{#if isKnowledgeTab}}
+  <h3><i class="fa-solid fa-brain"></i> NPC Knowledge & Travel History Grid</h3>
+  <p style="font-size: 0.85rem; color: var(--hm-text-muted);">Tracks which rooms each NPC has visited, tools acquired, and tokens witnessed.</p>
+
+  <div class="hm-card-grid">
+    {{#each npcKnowledge}}
+    <div class="hm-card">
+      <div class="hm-card-header">
+        <span>{{this.name}}</span>
+        <span style="font-size: 0.75rem; color: var(--hm-gold-light);">{{this.currentRoom}}</span>
+      </div>
+      <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.3rem;">
+        <div><strong>Rooms Visited:</strong> {{this.roomsVisited}}</div>
+        <div><strong>Characters Witnessed:</strong> {{this.seenTokens}}</div>
+        <div><strong>Tools Acquired:</strong> {{this.tools}}</div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  {{/if}}
+
+  <!-- TAB 4: 13 NPC ROSTER -->
+  {{#if isRosterTab}}
+  <h3><i class="fa-solid fa-users"></i> 13-Character NPC Roster</h3>
+  <div class="hm-card-grid">
+    {{#each npcRoster}}
+    <div class="hm-card">
+      <div class="hm-card-header">
+        <span>{{this.name}}</span>
+        <span style="font-size: 0.75rem; color: var(--hm-text-muted);">{{this.title}}</span>
+      </div>
+      <div style="font-size: 0.85rem;">
+        <div><strong>Role:</strong> {{this.role}} | <strong>Starts in:</strong> {{this.startingRoom}}</div>
+        <div style="margin-top: 0.3rem; color: var(--hm-text-light);">{{this.bio}}</div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  {{/if}}
 </div>

@@ -1,58 +1,66 @@
 <div class="hintz-manor-app">
   <div class="hintz-manor-header">
     <h2><i class="fa-solid fa-book-skull"></i> Detective Notebook</h2>
-    <div class="hintz-manor-subtitle">Cross off clues, analyze sightline travel logs, and make your accusation</div>
+    <div class="hintz-manor-subtitle">Cross off clues, review sightline travel logs, and submit your deduction</div>
   </div>
 
   <h3><i class="fa-solid fa-table-cells"></i> Deduction Matrix</h3>
-  <p style="font-size: 0.85rem; color: var(--hm-text-muted);">Click any item to toggle elimination cross-off.</p>
+  <p style="font-size: 0.85rem; color: var(--hm-text-muted);">Click any button to toggle elimination status.</p>
 
-  <table class="hm-matrix-table">
-    <thead>
-      <tr>
-        <th>Category</th>
-        <th>Items & Elimination Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>Suspects</strong></td>
-        <td>
-          {{#each suspectItems}}
-          <button type="button" class="hm-status-btn {{#if this.isEliminated}}eliminated{{/if}}" data-action="toggleElimination" data-type="suspect" data-name="{{this.name}}">
-            {{#if this.isEliminated}}<i class="fa-solid fa-xmark"></i>{{else}}<i class="fa-solid fa-user"></i>{{/if}} {{this.name}}
-          </button>
-          {{/each}}
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Weapons</strong></td>
-        <td>
-          {{#each weaponItems}}
-          <button type="button" class="hm-status-btn {{#if this.isEliminated}}eliminated{{/if}}" data-action="toggleElimination" data-type="weapon" data-name="{{this.name}}">
-            {{#if this.isEliminated}}<i class="fa-solid fa-xmark"></i>{{else}}<i class="fa-solid fa-gavel"></i>{{/if}} {{this.name}}
-          </button>
-          {{/each}}
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Rooms</strong></td>
-        <td>
-          {{#each roomItems}}
-          <button type="button" class="hm-status-btn {{#if this.isEliminated}}eliminated{{/if}}" data-action="toggleElimination" data-type="room" data-name="{{this.name}}">
-            {{#if this.isEliminated}}<i class="fa-solid fa-xmark"></i>{{else}}<i class="fa-solid fa-door-open"></i>{{/if}} {{this.name}}
-          </button>
-          {{/each}}
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="hm-scrollable-section">
+    <table class="hm-matrix-table">
+      <thead>
+        <tr>
+          <th style="width: 110px;">Category</th>
+          <th>Items & Elimination Cross-Off Buttons</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Suspects (13)</strong></td>
+          <td>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.2rem;">
+              {{#each suspectItems}}
+              <button type="button" class="hm-status-btn {{#if this.isEliminated}}eliminated{{/if}}" data-action="toggleElimination" data-type="suspect" data-name="{{this.name}}">
+                {{#if this.isEliminated}}<i class="fa-solid fa-xmark"></i>{{else}}<i class="fa-solid fa-user"></i>{{/if}} {{this.name}}
+              </button>
+              {{/each}}
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Weapons</strong></td>
+          <td>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.2rem;">
+              {{#each weaponItems}}
+              <button type="button" class="hm-status-btn {{#if this.isEliminated}}eliminated{{/if}}" data-action="toggleElimination" data-type="weapon" data-name="{{this.name}}">
+                {{#if this.isEliminated}}<i class="fa-solid fa-xmark"></i>{{else}}<i class="fa-solid fa-gavel"></i>{{/if}} {{this.name}}
+              </button>
+              {{/each}}
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Rooms</strong></td>
+          <td>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.2rem;">
+              {{#each roomItems}}
+              <button type="button" class="hm-status-btn {{#if this.isEliminated}}eliminated{{/if}}" data-action="toggleElimination" data-type="room" data-name="{{this.name}}">
+                {{#if this.isEliminated}}<i class="fa-solid fa-xmark"></i>{{else}}<i class="fa-solid fa-door-open"></i>{{/if}} {{this.name}}
+              </button>
+              {{/each}}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <hr style="border-color: var(--hm-border-gold); margin: 1rem 0;" />
 
-  <h3><i class="fa-solid fa-scale-balanced"></i> Make Formal Accusation</h3>
-  <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
-    <div class="hm-form-group" style="flex: 1;">
+  <h3><i class="fa-solid fa-scale-balanced"></i> Formal Accusation Submission</h3>
+  <div style="display: flex; gap: 0.5rem; align-items: flex-end; flex-wrap: wrap;">
+    <div class="hm-form-group" style="flex: 1; min-width: 150px;">
       <label>Suspect:</label>
       <select name="accusedSuspect">
         {{#each suspectItems}}
@@ -60,7 +68,7 @@
         {{/each}}
       </select>
     </div>
-    <div class="hm-form-group" style="flex: 1;">
+    <div class="hm-form-group" style="flex: 1; min-width: 150px;">
       <label>Weapon:</label>
       <select name="accusedWeapon">
         {{#each weaponItems}}
@@ -68,7 +76,7 @@
         {{/each}}
       </select>
     </div>
-    <div class="hm-form-group" style="flex: 1;">
+    <div class="hm-form-group" style="flex: 1; min-width: 150px;">
       <label>Room:</label>
       <select name="accusedRoom">
         {{#each roomItems}}
@@ -84,7 +92,7 @@
   <hr style="border-color: var(--hm-border-gold); margin: 1rem 0;" />
 
   <h3><i class="fa-solid fa-eye"></i> Recorded Witness & Travel Log</h3>
-  <div class="hm-logs-list" style="max-height: 150px; overflow-y: auto;">
+  <div class="hm-scrollable-section" style="max-height: 160px;">
     {{#each turnLogs}}
     <div class="hm-log-entry">
       <div class="hm-log-title">

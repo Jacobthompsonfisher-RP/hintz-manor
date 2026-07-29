@@ -3,14 +3,21 @@ import { NPC_ROSTER } from '../data/NPCRoster.js';
 import { MotiveGenerator } from '../core/MotiveGenerator.js';
 import { RegionManager } from '../core/RegionManager.js';
 import { OpenVTTImporter } from '../core/OpenVTTImporter.js';
+import { ActorManager } from '../core/ActorManager.js';
+import { TrackingEngine } from '../core/TrackingEngine.js';
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 /**
- * GMMysteryPanel provides the GM interface for mystery setup, NPC roster management,
- * OpenVTT map importing, role assignment, and crime timeline monitoring in Foundry V14.
+ * GMMysteryPanel provides the GM interface for mystery setup, Motive Grids,
+ * NPC Knowledge & Travel History, Map Importing, and Game Reset in Foundry V14.
  */
 export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
+  constructor(options = {}) {
+    super(options);
+    this.activeTab = 'setup';
+  }
+
   static DEFAULT_OPTIONS = {
     id: 'hintz-manor-gm-panel',
     tag: 'form',
@@ -20,13 +27,15 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
       resizable: true
     },
     position: {
-      width: 750,
-      height: 650
+      width: 780,
+      height: 680
     },
     actions: {
+      switchTab: GMMysteryPanel._onSwitchTab,
       initializeMystery: GMMysteryPanel._onInitializeMystery,
       randomizeMystery: GMMysteryPanel._onRandomizeMystery,
       importOpenVTTMaps: GMMysteryPanel._onImportOpenVTTMaps,
+      importActors: GMMysteryPanel._onImportActors,
       resetMystery: GMMysteryPanel._onResetMystery
     }
   };
@@ -45,9 +54,50 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
     const rooms = RegionManager.getAllRooms();
     const defaultWeapons = ['Candlestick', 'Dagger', 'Lead Pipe', 'Revolver', 'Rope', 'Wrench', 'Poison Vial'];
 
+    // Prepare Knowledge & Travel History per NPC
+    const npcKnowledge = NPC_ROSTER.map(npc => {
+      const history = turnLogs.filter(log => log.actorName === npc.name);
+      const roomsVisited = Array.from(new Set(history.map(h => h.room)));
+      const seenTokens = Array.from(new Set(history.flatMap(h => h.visibleTokenNames || [])));
+      
+      const token = canvas.tokens?.placeables.find(t => t.name === npc.name);
+      const tools = token ? (token.document.getFlag(HINTZ_MANOR.ID, 'acquiredTools') || []) : [];
+
+      return {
+        name: npc.name,
+        role: npc.role,
+        currentRoom: token ? RegionManager.getRoomAt(token) : npc.startingRoom,
+        roomsVisited: roomsVisited.length > 0 ? roomsVisited.join(', ') : 'None yet',
+        seenTokens: seenTokens.length > 0 ? seenTokens.join(', ') : 'No witnesses seen',
+        tools: tools.length > 0 ? tools.join(', ') : 'No tools acquired'
+      };
+    });
+
+    // Prepare Motives List
+    const motivesList = NPC_ROSTER.map(npc => {
+      const motiveData = mysteryState.motives?.[npc.id] || { motive: 'Unknown', secret: 'None' };
+      return {
+        name: npc.name,
+        role: npc.role,
+        isKiller: mysteryState.killerId === npc.id,
+        isVictim: mysteryState.victimId === npc.id,
+        motive: motiveData.motive,
+        secret: motiveData.secret
+      };
+    });
+
     return {
+      activeTab: this.activeTab,
+      isSetupTab: this.activeTab === 'setup',
+      isMotivesTab: this.activeTab === 'motives',
+      isKnowledgeTab: this.activeTab === 'knowledge',
+      isRosterTab: this.activeTab === 'roster',
       mysteryState,
-      turnLogs: turnLogs.slice(-15).reverse(),
+      motivesList,
+      npcKnowledge,
+      alliances: mysteryState.alliances || [],
+      rivalries: mysteryState.rivalries || [],
+      turnLogs: turnLogs.slice(-25).reverse(),
       tokens: sceneTokens,
       npcRoster: NPC_ROSTER,
       rooms,
@@ -56,6 +106,18 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
       isInProgress: mysteryState.status === HINTZ_MANOR.STATUS.IN_PROGRESS,
       isCrimeCommitted: mysteryState.status === HINTZ_MANOR.STATUS.CRIME_COMMITTED
     };
+  }
+
+  static async _onSwitchTab(event, target) {
+    event.preventDefault();
+    this.activeTab = target.dataset.tab;
+    this.render();
+  }
+
+  static async _onImportActors(event, target) {
+    event.preventDefault();
+    await ActorManager.importAllActors();
+    this.render();
   }
 
   static async _onInitializeMystery(event, target) {
@@ -86,7 +148,7 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
     };
 
     await game.settings.set(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.MYSTERY_STATE, newState);
-    ui.notifications.info(`${HINTZ_MANOR.TITLE}: Mystery initialized! The secret killer is set.`);
+    ui.notifications.info(`${HINTZ_MANOR.TITLE}: Mystery initialized!`);
     this.render();
   }
 
@@ -115,10 +177,11 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
       solution: null
     };
 
+    await ActorManager.importAllActors();
     await game.settings.set(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.MYSTERY_STATE, newState);
     await game.settings.set(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.TURN_LOGS, []);
 
-    ui.notifications.info(`🎲 ${HINTZ_MANOR.TITLE}: Full Mystery Reset! Killer, Motives, and Weapon placements have been randomized!`);
+    ui.notifications.info(`🎲 ${HINTZ_MANOR.TITLE}: Full Game Reset! 13 Actors Imported, Mystery & Motives Randomized!`);
     this.render();
   }
 

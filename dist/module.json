@@ -1,8 +1,8 @@
 {
   "id": "hintz-manor",
   "title": "Hintz Manor - Clue-Style Mystery & Evidence Engine",
-  "description": "Transforms tactical map movement and turns into an automated Clue-style murder mystery engine with per-turn travel history, sightlines, semi-autonomous cascading NPC pathing, OpenVTT map importer with background images, 13 NPC roster, persistent floating UI dock, and interactive evidence deduction UI.",
-  "version": "1.0.4",
+  "description": "Transforms tactical map movement and turns into an automated Clue-style murder mystery engine with per-turn travel history, sightlines, semi-autonomous cascading NPC pathing, OpenVTT map importer, 13 NPC roster, Motive & Knowledge grids, persistent floating UI dock, and interactive evidence deduction UI.",
+  "version": "1.0.5",
   "compatibility": {
     "minimum": "14",
     "verified": "14.363"
@@ -18,6 +18,20 @@
   ],
   "styles": [
     "styles/hintz-manor.css"
+  ],
+  "packs": [
+    {
+      "name": "manor-actors",
+      "label": "Hintz Manor - 13 NPC Cast",
+      "type": "Actor",
+      "path": "packs/manor-actors"
+    },
+    {
+      "name": "manor-scenes",
+      "label": "Hintz Manor - 4 Floor Maps",
+      "type": "Scene",
+      "path": "packs/manor-scenes"
+    }
   ],
   "url": "https://github.com/Jacobthompsonfisher-RP/hintz-manor",
   "manifest": "https://github.com/Jacobthompsonfisher-RP/hintz-manor/releases/latest/download/module.json",

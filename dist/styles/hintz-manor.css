@@ -2,20 +2,20 @@
 
 :root {
   --hm-bg-dark: #121016;
-  --hm-bg-panel: rgba(24, 20, 30, 0.88);
+  --hm-bg-panel: rgba(24, 20, 30, 0.92);
   --hm-border-gold: #c5a059;
   --hm-gold-light: #e6c885;
   --hm-crimson: #8b1e24;
   --hm-crimson-light: #b92b33;
   --hm-text-light: #e0d8cf;
   --hm-text-muted: #9e9389;
-  --hm-shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+  --hm-shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
   --hm-blur-glass: blur(12px);
   --hm-font-heading: 'Cinzel', 'Times New Roman', serif;
   --hm-font-body: 'Signika', sans-serif;
 }
 
-/* Floating UI Control Dock */
+/* Persistent On-Screen Dock */
 #hintz-manor-dock {
   position: fixed;
   top: 60px;
@@ -53,6 +53,7 @@
   box-shadow: 0 0 10px rgba(230, 200, 133, 0.6);
 }
 
+/* App Window & Scroll Containment */
 .hintz-manor-app {
   background: var(--hm-bg-panel) !important;
   backdrop-filter: var(--hm-blur-glass) !important;
@@ -61,6 +62,27 @@
   color: var(--hm-text-light) !important;
   font-family: var(--hm-font-body);
   border-radius: 8px;
+  max-height: 85vh;
+  overflow-y: auto !important;
+  padding: 1rem;
+}
+
+/* Custom Scrollbars */
+.hintz-manor-app::-webkit-scrollbar,
+.hm-scrollable::-webkit-scrollbar {
+  width: 8px;
+}
+
+.hintz-manor-app::-webkit-scrollbar-track,
+.hm-scrollable::-webkit-scrollbar-track {
+  background: rgba(15, 12, 20, 0.6);
+  border-radius: 4px;
+}
+
+.hintz-manor-app::-webkit-scrollbar-thumb,
+.hm-scrollable::-webkit-scrollbar-thumb {
+  background: var(--hm-border-gold);
+  border-radius: 4px;
 }
 
 .hintz-manor-app .window-header {
@@ -93,6 +115,50 @@
   font-style: italic;
 }
 
+/* Navigation Tabs */
+.hm-tab-nav {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--hm-border-gold);
+  padding-bottom: 0.4rem;
+  overflow-x: auto;
+}
+
+.hm-tab-btn {
+  background: rgba(35, 28, 44, 0.8);
+  border: 1px solid rgba(197, 160, 89, 0.4);
+  color: var(--hm-text-muted);
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  font-family: var(--hm-font-heading);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.hm-tab-btn:hover {
+  color: var(--hm-gold-light);
+  background: rgba(55, 42, 70, 0.9);
+}
+
+.hm-tab-btn.active {
+  background: rgba(20, 16, 26, 0.95);
+  color: var(--hm-gold-light);
+  border-color: var(--hm-border-gold);
+  border-bottom-color: transparent;
+  font-weight: bold;
+}
+
+/* Scrollable Containers for Matrix Tables & Notebook Sheets */
+.hm-scrollable-section {
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 0.4rem;
+  margin-bottom: 1rem;
+}
+
 /* Matrix Table */
 .hm-matrix-table {
   width: 100%;
@@ -101,12 +167,15 @@
 }
 
 .hm-matrix-table th {
-  background: rgba(30, 22, 38, 0.9);
+  background: rgba(30, 22, 38, 0.95);
   color: var(--hm-gold-light);
   font-family: var(--hm-font-heading);
   padding: 0.6rem;
   border: 1px solid rgba(197, 160, 89, 0.4);
   text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 .hm-matrix-table td {
@@ -119,14 +188,19 @@
   background: rgba(26, 21, 34, 0.6);
 }
 
+/* Suspect Status Cross-Off Buttons */
 .hm-status-btn {
   background: rgba(40, 30, 50, 0.8);
   border: 1px solid var(--hm-border-gold);
   color: var(--hm-text-light);
-  padding: 0.2rem 0.6rem;
-  border-radius: 3px;
+  padding: 0.25rem 0.5rem;
+  margin: 0.15rem;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   transition: all 0.2s ease;
 }
 
@@ -141,6 +215,34 @@
   border-color: var(--hm-crimson-light);
   color: #ff9999;
   text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* Knowledge & Motive Cards */
+.hm-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 0.8rem;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.hm-card {
+  background: rgba(25, 20, 32, 0.8);
+  border: 1px solid var(--hm-border-gold);
+  border-radius: 6px;
+  padding: 0.8rem;
+}
+
+.hm-card-header {
+  font-family: var(--hm-font-heading);
+  color: var(--hm-gold-light);
+  font-weight: bold;
+  border-bottom: 1px dashed rgba(197, 160, 89, 0.4);
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
 }
 
 /* Evidence Logs */
@@ -165,12 +267,12 @@
 }
 
 .hm-log-entry .hm-log-body {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--hm-text-light);
   margin-top: 0.2rem;
 }
 
-/* Buttons */
+/* Buttons & Inputs */
 .hm-btn-primary {
   background: linear-gradient(180deg, #8b1e24 0%, #5d1217 100%);
   color: #ffffff;
@@ -201,9 +303,8 @@
   border-color: var(--hm-gold-light);
 }
 
-/* Form Groups */
 .hm-form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
@@ -211,7 +312,7 @@
 
 .hm-form-group label {
   color: var(--hm-gold-light);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: bold;
 }
 
