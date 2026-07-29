@@ -5,48 +5,49 @@ let gmPanelInstance = null;
 let notebookInstance = null;
 
 /**
- * DockUI integrates Hintz Manor control buttons directly into Foundry's right-hand sidebar tabs (#sidebar-tabs),
- * adopting native Foundry UI styling, tooltips, and collapsing behavior.
+ * DockUI attaches a vertical column of native-styled control buttons to the right-hand sidebar (#sidebar).
+ * Buttons stack vertically, adopt Foundry UI icon styling, and collapse/expand seamlessly with the sidebar.
  */
 export class DockUI {
   static renderSidebarButtons() {
-    const sidebarTabs = document.querySelector('#sidebar-tabs');
-    if (!sidebarTabs) return;
+    const sidebar = document.querySelector('#sidebar');
+    if (!sidebar) return;
 
-    // Check if notebook button already exists
-    if (!document.getElementById('hm-sidebar-notebook')) {
-      const notebookBtn = document.createElement('a');
-      notebookBtn.id = 'hm-sidebar-notebook';
-      notebookBtn.className = 'item hintz-manor-tab';
-      notebookBtn.setAttribute('data-tooltip', 'Detective Notebook');
-      notebookBtn.setAttribute('aria-label', 'Detective Notebook');
-      notebookBtn.innerHTML = '<i class="fa-solid fa-book-skull"></i>';
-
-      notebookBtn.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        if (!notebookInstance) notebookInstance = new DetectiveNotebook();
-        notebookInstance.render(true);
-      });
-
-      sidebarTabs.appendChild(notebookBtn);
+    let dock = document.getElementById('hintz-manor-vertical-dock');
+    if (!dock) {
+      dock = document.createElement('div');
+      dock.id = 'hintz-manor-vertical-dock';
+      sidebar.appendChild(dock);
     }
 
-    // Check if GM button already exists (GM only)
-    if (game.user.isGM && !document.getElementById('hm-sidebar-gm')) {
-      const gmBtn = document.createElement('a');
-      gmBtn.id = 'hm-sidebar-gm';
-      gmBtn.className = 'item hintz-manor-tab';
-      gmBtn.setAttribute('data-tooltip', 'GM Mystery Control Center');
-      gmBtn.setAttribute('aria-label', 'GM Mystery Control Center');
-      gmBtn.innerHTML = '<i class="fa-solid fa-masks-theater"></i>';
+    // Build Vertical Stack
+    let html = `
+      <button type="button" class="hm-sidebar-btn" id="hm-vertical-notebook" title="Detective Notebook" aria-label="Detective Notebook">
+        <i class="fa-solid fa-book-skull"></i>
+      </button>
+    `;
 
-      gmBtn.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        if (!gmPanelInstance) gmPanelInstance = new GMMysteryPanel();
-        gmPanelInstance.render(true);
-      });
-
-      sidebarTabs.appendChild(gmBtn);
+    if (game.user.isGM) {
+      html += `
+        <button type="button" class="hm-sidebar-btn" id="hm-vertical-gm" title="GM Mystery Control Center" aria-label="GM Mystery Control Center">
+          <i class="fa-solid fa-masks-theater"></i>
+        </button>
+      `;
     }
+
+    dock.innerHTML = html;
+
+    // Attach Click Handlers
+    dock.querySelector('#hm-vertical-notebook')?.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      if (!notebookInstance) notebookInstance = new DetectiveNotebook();
+      notebookInstance.render(true);
+    });
+
+    dock.querySelector('#hm-vertical-gm')?.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      if (!gmPanelInstance) gmPanelInstance = new GMMysteryPanel();
+      gmPanelInstance.render(true);
+    });
   }
 }

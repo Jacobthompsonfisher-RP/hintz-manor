@@ -311,7 +311,7 @@ class D {
     };
   }
 }
-class G {
+class N {
   /**
    * Evaluates if any NPC has met the isolation & tool criteria to commit the crime.
    * @returns {Object|null} Triggered crime result or null
@@ -596,7 +596,7 @@ class H {
     return ui.notifications.info(`Hintz Manor: Successfully imported scene "${o}" with background image and ${m.length} walls/doors!`), T;
   }
 }
-class N {
+class G {
   /**
    * Determines the valid Actor document type for the active game system.
    * @returns {string} Valid actor type string for active system
@@ -725,7 +725,7 @@ class S extends F(P) {
     o.preventDefault(), this.activeTab = e.dataset.tab, this.render();
   }
   static async _onImportActors(o, e) {
-    o.preventDefault(), await N.importAllActors(), this.render();
+    o.preventDefault(), await G.importAllActors(), this.render();
   }
   static async _onInitializeMystery(o, e) {
     o.preventDefault();
@@ -765,7 +765,7 @@ class S extends F(P) {
       roomWeaponLocations: s,
       solution: null
     };
-    await N.importAllActors(), await game.settings.set(a.ID, a.FLAGS.MYSTERY_STATE, i), await game.settings.set(a.ID, a.FLAGS.TURN_LOGS, []), ui.notifications.info(`🎲 ${a.TITLE}: Full Game Reset! 13 Actors Imported, Mystery & Motives Randomized!`), this.render();
+    await G.importAllActors(), await game.settings.set(a.ID, a.FLAGS.MYSTERY_STATE, i), await game.settings.set(a.ID, a.FLAGS.TURN_LOGS, []), ui.notifications.info(`🎲 ${a.TITLE}: Full Game Reset! 13 Actors Imported, Mystery & Motives Randomized!`), this.render();
   }
   static async _onImportOpenVTTMaps(o, e) {
     o.preventDefault(), ui.notifications.info(`${a.TITLE}: Importing pre-built OpenVTT map scenes with background images...`);
@@ -863,21 +863,24 @@ class A extends V(U) {
 let k = null, C = null;
 class L {
   static renderSidebarButtons() {
-    const o = document.querySelector("#sidebar-tabs");
-    if (o) {
-      if (!document.getElementById("hm-sidebar-notebook")) {
-        const e = document.createElement("a");
-        e.id = "hm-sidebar-notebook", e.className = "item hintz-manor-tab", e.setAttribute("data-tooltip", "Detective Notebook"), e.setAttribute("aria-label", "Detective Notebook"), e.innerHTML = '<i class="fa-solid fa-book-skull"></i>', e.addEventListener("click", (t) => {
-          t.preventDefault(), C || (C = new A()), C.render(!0);
-        }), o.appendChild(e);
-      }
-      if (game.user.isGM && !document.getElementById("hm-sidebar-gm")) {
-        const e = document.createElement("a");
-        e.id = "hm-sidebar-gm", e.className = "item hintz-manor-tab", e.setAttribute("data-tooltip", "GM Mystery Control Center"), e.setAttribute("aria-label", "GM Mystery Control Center"), e.innerHTML = '<i class="fa-solid fa-masks-theater"></i>', e.addEventListener("click", (t) => {
-          t.preventDefault(), k || (k = new S()), k.render(!0);
-        }), o.appendChild(e);
-      }
-    }
+    const o = document.querySelector("#sidebar");
+    if (!o) return;
+    let e = document.getElementById("hintz-manor-vertical-dock");
+    e || (e = document.createElement("div"), e.id = "hintz-manor-vertical-dock", o.appendChild(e));
+    let t = `
+      <button type="button" class="hm-sidebar-btn" id="hm-vertical-notebook" title="Detective Notebook" aria-label="Detective Notebook">
+        <i class="fa-solid fa-book-skull"></i>
+      </button>
+    `;
+    game.user.isGM && (t += `
+        <button type="button" class="hm-sidebar-btn" id="hm-vertical-gm" title="GM Mystery Control Center" aria-label="GM Mystery Control Center">
+          <i class="fa-solid fa-masks-theater"></i>
+        </button>
+      `), e.innerHTML = t, e.querySelector("#hm-vertical-notebook")?.addEventListener("click", (n) => {
+      n.preventDefault(), C || (C = new A()), C.render(!0);
+    }), e.querySelector("#hm-vertical-gm")?.addEventListener("click", (n) => {
+      n.preventDefault(), k || (k = new S()), k.render(!0);
+    });
   }
 }
 let R = null, E = null;
@@ -935,9 +938,9 @@ Hooks.on("updateCombat", async (p, o) => {
     });
     m.suggestedRoom && m.suggestedRoom !== t?.room && ui.notifications.info(`🧭 ${n.name} (${m.pathReason}): Suggested destination -> ${m.suggestedRoom}`);
   }
-  await G.evaluateCrimeOpportunity();
+  await N.evaluateCrimeOpportunity();
 });
 Hooks.on("updateToken", async (p, o) => {
-  game.user.isGM && ("x" in o || "y" in o) && (I.recordTurnSnapshot(p), await G.evaluateCrimeOpportunity());
+  game.user.isGM && ("x" in o || "y" in o) && (I.recordTurnSnapshot(p), await N.evaluateCrimeOpportunity());
 });
 //# sourceMappingURL=main.js.map
