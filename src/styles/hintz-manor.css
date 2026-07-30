@@ -15,41 +15,15 @@
   --hm-font-body: 'Signika', sans-serif;
 }
 
-/* Vertical Control Stack docked flush against #sidebar's left border */
-#hintz-manor-vertical-dock {
-  position: absolute;
-  top: 12px;
-  right: 100%;
-  margin-right: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  z-index: 60;
-  pointer-events: auto;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.hm-sidebar-btn {
-  width: 36px;
-  height: 36px;
-  background: rgba(20, 16, 26, 0.92);
-  border: 1px solid var(--hm-border-gold);
+/* Native Sidebar Tab Button Styling (Inherits Foundry UI Layout & Stacking) */
+#sidebar-tabs .item.hintz-manor-sidebar-tab i {
   color: var(--hm-gold-light);
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
   transition: all 0.2s ease;
 }
 
-.hm-sidebar-btn:hover {
-  background: var(--hm-gold-light);
-  color: #121016;
-  box-shadow: 0 0 10px rgba(230, 200, 133, 0.8);
-  transform: scale(1.06);
+#sidebar-tabs .item.hintz-manor-sidebar-tab:hover i {
+  color: #ffffff;
+  text-shadow: 0 0 8px var(--hm-gold-light);
 }
 
 /* App Window & Scroll Containment */
