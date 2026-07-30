@@ -28,8 +28,8 @@ export class ActorManager {
   }
 
   /**
-   * Imports all 13 NPC Actors into the active Foundry world if they do not exist.
-   * @returns {Promise<Actor[]>} Array of created or existing Actors
+   * Imports all 13 NPC Actors into the active Foundry world using batch document creation.
+   * @returns {Promise<Actor[]>} Array of created Actors
    */
   static async importAllActors() {
     if (!game.user.isGM) return [];
@@ -37,33 +37,40 @@ export class ActorManager {
     const actorType = this.getValidActorType();
     console.log(`Hintz Manor | System-agnostic Actor creation using type "${actorType}" for system "${game.system.id}".`);
 
-    const created = [];
+    const toCreate = [];
     for (const npc of NPC_ROSTER) {
-      let existing = game.actors.find(a => a.name === npc.name);
+      const existing = game.actors.find(a => a.name === npc.name);
       if (!existing) {
-        try {
-          existing = await Actor.create({
-            name: npc.name,
-            type: actorType,
-            img: npc.avatar || 'icons/svg/mystery-man.svg',
-            flags: {
-              'hintz-manor': {
-                npcId: npc.id,
-                role: npc.role,
-                category: npc.category,
-                personality: npc.personality,
-                startingRoom: npc.startingRoom
-              }
+        toCreate.push({
+          name: npc.name,
+          type: actorType,
+          img: npc.avatar || 'icons/svg/mystery-man.svg',
+          flags: {
+            'hintz-manor': {
+              npcId: npc.id,
+              role: npc.role,
+              category: npc.category,
+              personality: npc.personality,
+              startingRoom: npc.startingRoom
             }
-          });
-        } catch (err) {
-          console.warn(`Hintz Manor | Could not create Actor ${npc.name}:`, err);
-        }
+          }
+        });
       }
-      if (existing) created.push(existing);
     }
 
-    ui.notifications.info(`Hintz Manor: Successfully imported 13 NPC Actors into your Actors Sidebar!`);
-    return created;
+    if (toCreate.length > 0) {
+      try {
+        const created = await Actor.createDocuments(toCreate);
+        ui.notifications.info(`Hintz Manor: Successfully imported ${created.length} NPC Actors into your Actors Sidebar!`);
+        return created;
+      } catch (err) {
+        console.error('Hintz Manor | Error creating Actor documents:', err);
+        ui.notifications.error(`Hintz Manor: Error creating Actors: ${err.message}`);
+        return [];
+      }
+    } else {
+      ui.notifications.info(`Hintz Manor: All 13 NPC Actors are already present in your Actors Sidebar.`);
+      return [];
+    }
   }
 }

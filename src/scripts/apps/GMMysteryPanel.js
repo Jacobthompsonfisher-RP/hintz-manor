@@ -34,6 +34,7 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
       switchTab: GMMysteryPanel._onSwitchTab,
       initializeMystery: GMMysteryPanel._onInitializeMystery,
       randomizeMystery: GMMysteryPanel._onRandomizeMystery,
+      generateMotives: GMMysteryPanel._onGenerateMotives,
       importOpenVTTMaps: GMMysteryPanel._onImportOpenVTTMaps,
       importActors: GMMysteryPanel._onImportActors,
       resetMystery: GMMysteryPanel._onResetMystery
@@ -47,8 +48,25 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
   };
 
   async _prepareContext(options) {
-    const mysteryState = game.settings.get(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.MYSTERY_STATE) || {};
+    let mysteryState = game.settings.get(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.MYSTERY_STATE) || {};
     const turnLogs = game.settings.get(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.TURN_LOGS) || [];
+
+    // Auto-initialize Motive Matrix if not yet generated
+    if (!mysteryState.motives) {
+      const scenario = MotiveGenerator.generateScenario('lord-hintz');
+      mysteryState = {
+        ...mysteryState,
+        killerId: scenario.killerId,
+        killerName: scenario.killerName,
+        victimId: scenario.victimId,
+        victimName: scenario.victimName,
+        requiredWeapon: scenario.requiredWeapon,
+        motives: scenario.characterMotives,
+        alliances: scenario.alliances,
+        rivalries: scenario.rivalries
+      };
+      await game.settings.set(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.MYSTERY_STATE, mysteryState);
+    }
 
     const sceneTokens = canvas.tokens?.placeables.map(t => ({ id: t.id, name: t.name })) || [];
     const rooms = RegionManager.getAllRooms();
@@ -75,8 +93,9 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
 
     // Prepare Motives List
     const motivesList = NPC_ROSTER.map(npc => {
-      const motiveData = mysteryState.motives?.[npc.id] || { motive: 'Unknown', secret: 'None' };
+      const motiveData = mysteryState.motives?.[npc.id] || { motive: 'Secret Alibi', secret: 'None' };
       return {
+        id: npc.id,
         name: npc.name,
         role: npc.role,
         isKiller: mysteryState.killerId === npc.id,
@@ -117,6 +136,28 @@ export class GMMysteryPanel extends HandlebarsApplicationMixin(ApplicationV2) {
   static async _onImportActors(event, target) {
     event.preventDefault();
     await ActorManager.importAllActors();
+    this.render();
+  }
+
+  static async _onGenerateMotives(event, target) {
+    event.preventDefault();
+    const scenario = MotiveGenerator.generateScenario('lord-hintz');
+    const mysteryState = game.settings.get(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.MYSTERY_STATE) || {};
+
+    const updated = {
+      ...mysteryState,
+      killerId: scenario.killerId,
+      killerName: scenario.killerName,
+      victimId: scenario.victimId,
+      victimName: scenario.victimName,
+      requiredWeapon: scenario.requiredWeapon,
+      motives: scenario.characterMotives,
+      alliances: scenario.alliances,
+      rivalries: scenario.rivalries
+    };
+
+    await game.settings.set(HINTZ_MANOR.ID, HINTZ_MANOR.FLAGS.MYSTERY_STATE, updated);
+    ui.notifications.info(`🎲 ${HINTZ_MANOR.TITLE}: Motive & Relationship Matrix Initialized and Shuffled!`);
     this.render();
   }
 
