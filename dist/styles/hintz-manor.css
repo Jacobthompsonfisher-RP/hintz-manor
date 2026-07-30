@@ -15,22 +15,31 @@
   --hm-font-body: 'Signika', sans-serif;
 }
 
-/* Right-hand Sidebar Directory Header Buttons */
+/* Right-hand Sidebar Directory Header Action Buttons */
 .directory-header .header-actions button.hintz-notebook-btn,
 .directory-header .header-actions button.hintz-gm-btn,
-button.hintz-notebook-btn,
-button.hintz-gm-btn {
+.header-actions button.hintz-notebook-btn,
+.header-actions button.hintz-gm-btn {
+  background: rgba(35, 28, 44, 0.85) !important;
   color: var(--hm-gold-light) !important;
-  border-color: rgba(197, 160, 89, 0.4) !important;
+  border: 1px solid var(--hm-border-gold) !important;
+  border-radius: 4px;
+  font-family: var(--hm-font-heading);
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  margin-bottom: 0.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .directory-header .header-actions button.hintz-notebook-btn:hover,
 .directory-header .header-actions button.hintz-gm-btn:hover,
-button.hintz-notebook-btn:hover,
-button.hintz-gm-btn:hover {
-  color: #ffffff !important;
-  border-color: var(--hm-gold-light) !important;
-  box-shadow: 0 0 8px rgba(230, 200, 133, 0.5);
+.header-actions button.hintz-notebook-btn:hover,
+.header-actions button.hintz-gm-btn:hover {
+  background: var(--hm-gold-light) !important;
+  color: #121016 !important;
+  font-weight: bold;
+  box-shadow: 0 0 8px rgba(230, 200, 133, 0.6);
 }
 
 /* App Window & Scroll Containment */
