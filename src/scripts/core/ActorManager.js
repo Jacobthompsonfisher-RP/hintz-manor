@@ -6,10 +6,11 @@ import { NPC_ROSTER } from '../data/NPCRoster.js';
  */
 export class ActorManager {
   /**
-   * Determines the valid Actor document type for the active game system.
+   * Determines the valid Actor document type for the active game system in Foundry V14.
    * @returns {string} Valid actor type string for active system
    */
   static getValidActorType() {
+    // 1. Check Beaver's System Interface if active
     if (game.modules?.get('beavers-system-interface')?.active && typeof beaversSystemInterface !== 'undefined') {
       try {
         const bsiType = beaversSystemInterface.getActorType?.('npc');
@@ -19,16 +20,22 @@ export class ActorManager {
       }
     }
 
-    const validTypes = game.system?.documentTypes?.Actor || [];
-    if (validTypes.includes('npc')) return 'npc';
-    if (validTypes.includes('character')) return 'character';
-    if (validTypes.includes('person')) return 'person';
+    // 2. Query Foundry V14 CONFIG.Actor & game.system document types
+    const configTypes = Object.keys(CONFIG.Actor?.typeLabels || game.model?.Actor || {});
+    const systemTypes = Array.isArray(game.system?.documentTypes?.Actor) 
+      ? game.system.documentTypes.Actor 
+      : configTypes;
 
-    return validTypes[0] || 'npc';
+    if (systemTypes.includes('npc')) return 'npc';
+    if (systemTypes.includes('character')) return 'character';
+    if (systemTypes.includes('person')) return 'person';
+    if (systemTypes.includes('base')) return 'base';
+
+    return systemTypes[0] || 'character';
   }
 
   /**
-   * Imports all 13 NPC Actors into the active Foundry world using batch document creation.
+   * Imports all 13 NPC Actors into the active Foundry world using batch creation & single fallback.
    * @returns {Promise<Actor[]>} Array of created Actors
    */
   static async importAllActors() {
@@ -45,6 +52,7 @@ export class ActorManager {
           name: npc.name,
           type: actorType,
           img: npc.avatar || 'icons/svg/mystery-man.svg',
+          system: {},
           flags: {
             'hintz-manor': {
               npcId: npc.id,
@@ -64,9 +72,24 @@ export class ActorManager {
         ui.notifications.info(`Hintz Manor: Successfully imported ${created.length} NPC Actors into your Actors Sidebar!`);
         return created;
       } catch (err) {
-        console.error('Hintz Manor | Error creating Actor documents:', err);
-        ui.notifications.error(`Hintz Manor: Error creating Actors: ${err.message}`);
-        return [];
+        console.warn('Hintz Manor | Batch Actor creation failed, attempting single fallback:', err);
+        const fallbackCreated = [];
+        for (const data of toCreate) {
+          try {
+            const doc = await Actor.create(data);
+            if (doc) fallbackCreated.push(doc);
+          } catch (singleErr) {
+            console.error(`Hintz Manor | Single Actor creation failed for ${data.name}:`, singleErr);
+          }
+        }
+
+        if (fallbackCreated.length > 0) {
+          ui.notifications.info(`Hintz Manor: Imported ${fallbackCreated.length} NPC Actors into your Actors Sidebar!`);
+          return fallbackCreated;
+        } else {
+          ui.notifications.error(`Hintz Manor: Could not create Actors in system "${game.system.id}": ${err.message}`);
+          return [];
+        }
       }
     } else {
       ui.notifications.info(`Hintz Manor: All 13 NPC Actors are already present in your Actors Sidebar.`);
