@@ -5,50 +5,63 @@ let gmPanelInstance = null;
 let notebookInstance = null;
 
 /**
- * DockUI injects a dedicated, 100% clickable vertical control dock pinned to the top-left canvas screen.
- * Stacks vertically, avoids all right-sidebar theme wrapping/clipping issues, and guarantees full clickability.
+ * DockUI integrates Hintz Manor control buttons into Foundry's right-hand sidebar directory headers
+ * (JournalDirectory, ActorDirectory, SceneDirectory) using official Foundry header button APIs.
+ * Buttons live strictly on the right-hand side inside native sidebar headers and collapse seamlessly.
  */
 export class DockUI {
-  static renderSidebarButtons() {
-    // Clean up any legacy sidebar elements that caused second-column wrapping or clipping
-    document.getElementById('hm-tab-notebook')?.remove();
-    document.getElementById('hm-tab-gm')?.remove();
+  static registerHooks() {
+    // Remove any legacy floating divs or custom absolute docks
+    document.getElementById('hintz-manor-dock')?.remove();
     document.getElementById('hintz-manor-vertical-dock')?.remove();
 
-    let dock = document.getElementById('hintz-manor-dock');
-    if (!dock) {
-      dock = document.createElement('div');
-      dock.id = 'hintz-manor-dock';
-      document.body.appendChild(dock);
-    }
-
-    let html = `
-      <button type="button" class="hm-dock-btn" id="hm-dock-notebook" title="Detective Notebook" aria-label="Detective Notebook">
-        <i class="fa-solid fa-book-skull"></i>
-      </button>
-    `;
-
-    if (game.user.isGM) {
-      html += `
-        <button type="button" class="hm-dock-btn" id="hm-dock-gm" title="GM Mystery Control Center" aria-label="GM Mystery Control Center">
-          <i class="fa-solid fa-masks-theater"></i>
-        </button>
-      `;
-    }
-
-    dock.innerHTML = html;
-
-    // Attach Event Listeners
-    dock.querySelector('#hm-dock-notebook')?.addEventListener('click', (ev) => {
-      ev.preventDefault();
-      if (!notebookInstance) notebookInstance = new DetectiveNotebook();
-      notebookInstance.render(true);
+    // 1. Add Detective Notebook button to Journal Directory Header (Right-hand sidebar)
+    Hooks.on('getJournalDirectoryHeaderButtons', (app, buttons) => {
+      buttons.unshift({
+        label: 'Detective Notebook',
+        class: 'hintz-notebook-btn',
+        icon: 'fa-solid fa-book-skull',
+        onclick: () => {
+          if (!notebookInstance) notebookInstance = new DetectiveNotebook();
+          notebookInstance.render(true);
+        }
+      });
     });
 
-    dock.querySelector('#hm-dock-gm')?.addEventListener('click', (ev) => {
-      ev.preventDefault();
-      if (!gmPanelInstance) gmPanelInstance = new GMMysteryPanel();
-      gmPanelInstance.render(true);
+    // 2. Add GM Control Center button to Actor Directory Header (Right-hand sidebar, GM Only)
+    Hooks.on('getActorDirectoryHeaderButtons', (app, buttons) => {
+      if (game.user.isGM) {
+        buttons.unshift({
+          label: 'GM Mystery Panel',
+          class: 'hintz-gm-btn',
+          icon: 'fa-solid fa-masks-theater',
+          onclick: () => {
+            if (!gmPanelInstance) gmPanelInstance = new GMMysteryPanel();
+            gmPanelInstance.render(true);
+          }
+        });
+      }
     });
+
+    // 3. Add GM Control Center button to Scene Directory Header (Right-hand sidebar, GM Only)
+    Hooks.on('getSceneDirectoryHeaderButtons', (app, buttons) => {
+      if (game.user.isGM) {
+        buttons.unshift({
+          label: 'GM Mystery Panel',
+          class: 'hintz-gm-btn',
+          icon: 'fa-solid fa-masks-theater',
+          onclick: () => {
+            if (!gmPanelInstance) gmPanelInstance = new GMMysteryPanel();
+            gmPanelInstance.render(true);
+          }
+        });
+      }
+    });
+  }
+
+  // Legacy helper kept for backward compatibility if called
+  static renderSidebarButtons() {
+    document.getElementById('hintz-manor-dock')?.remove();
+    document.getElementById('hintz-manor-vertical-dock')?.remove();
   }
 }

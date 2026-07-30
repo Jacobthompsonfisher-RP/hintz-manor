@@ -15,40 +15,22 @@
   --hm-font-body: 'Signika', sans-serif;
 }
 
-/* Dedicated Top-Left Vertical Control Dock */
-#hintz-manor-dock {
-  position: fixed;
-  top: 70px;
-  left: 15px;
-  z-index: 10000;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  pointer-events: auto !important;
+/* Right-hand Sidebar Directory Header Buttons */
+.directory-header .header-actions button.hintz-notebook-btn,
+.directory-header .header-actions button.hintz-gm-btn,
+button.hintz-notebook-btn,
+button.hintz-gm-btn {
+  color: var(--hm-gold-light) !important;
+  border-color: rgba(197, 160, 89, 0.4) !important;
 }
 
-#hintz-manor-dock .hm-dock-btn {
-  width: 38px;
-  height: 38px;
-  background: rgba(20, 16, 26, 0.92);
-  border: 1px solid var(--hm-border-gold);
-  color: var(--hm-gold-light);
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.15rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
-  transition: all 0.2s ease;
-  pointer-events: auto !important;
-}
-
-#hintz-manor-dock .hm-dock-btn:hover {
-  background: var(--hm-gold-light);
-  color: #121016;
-  box-shadow: 0 0 12px rgba(230, 200, 133, 0.9);
-  transform: scale(1.08);
+.directory-header .header-actions button.hintz-notebook-btn:hover,
+.directory-header .header-actions button.hintz-gm-btn:hover,
+button.hintz-notebook-btn:hover,
+button.hintz-gm-btn:hover {
+  color: #ffffff !important;
+  border-color: var(--hm-gold-light) !important;
+  box-shadow: 0 0 8px rgba(230, 200, 133, 0.5);
 }
 
 /* App Window & Scroll Containment */

@@ -15,6 +15,7 @@ const movementPlanner = new NPCMovementPlanner();
 Hooks.once('init', () => {
   console.log(`${HINTZ_MANOR.TITLE} | Initializing Hintz Manor Clue Engine (Foundry V14)...`);
   EvidenceStore.registerSettings();
+  DockUI.registerHooks();
 
   game.hintzManor = {
     openGM: () => {
@@ -30,20 +31,9 @@ Hooks.once('init', () => {
 
 Hooks.once('ready', () => {
   console.log(`${HINTZ_MANOR.TITLE} | Ready! Engine active.`);
-  DockUI.renderSidebarButtons();
-
   if (game.user.isGM) {
-    ui.notifications.info(`🔎 ${HINTZ_MANOR.TITLE} Engine Active! Click the right-hand sidebar tab buttons to open GM Control Center.`);
+    ui.notifications.info(`🔎 ${HINTZ_MANOR.TITLE} Engine Active! Access controls via Journal/Actor sidebar header buttons or Token Controls.`);
   }
-});
-
-// Render sidebar buttons whenever Foundry UI sidebar renders
-Hooks.on('renderSidebar', () => {
-  DockUI.renderSidebarButtons();
-});
-
-Hooks.on('renderSidebarTab', () => {
-  DockUI.renderSidebarButtons();
 });
 
 /**
