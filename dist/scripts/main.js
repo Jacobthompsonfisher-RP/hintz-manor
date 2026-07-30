@@ -25,7 +25,7 @@ const a = {
     CRIME_COMMITTED: "CRIME_COMMITTED"
   }
 };
-class w {
+class k {
   /**
    * Registers all module settings in Foundry.
    */
@@ -85,15 +85,15 @@ class w {
    * @returns {Object}
    */
   static getPlayerNotebook() {
-    const o = { eliminatedSuspects: [], eliminatedWeapons: [], eliminatedRooms: [], notes: "" };
-    return game.user.getFlag(a.ID, a.FLAGS.NOTEBOOK) || o;
+    const t = { eliminatedSuspects: [], eliminatedWeapons: [], eliminatedRooms: [], notes: "" };
+    return game.user.getFlag(a.ID, a.FLAGS.NOTEBOOK) || t;
   }
   /**
    * Saves player notebook state.
    * @param {Object} data 
    */
-  static async savePlayerNotebook(o) {
-    await game.user.setFlag(a.ID, a.FLAGS.NOTEBOOK, o);
+  static async savePlayerNotebook(t) {
+    await game.user.setFlag(a.ID, a.FLAGS.NOTEBOOK, t);
   }
 }
 class v {
@@ -102,23 +102,23 @@ class v {
    * @param {TokenDocument|Token|{x: number, y: number}} target - Token or coordinate object
    * @returns {string} Room name or "Corridor / Unknown"
    */
-  static getRoomAt(o) {
+  static getRoomAt(t) {
     if (!canvas?.ready) return "Unknown";
     const e = {
-      x: o.x ?? o.center?.x ?? 0,
-      y: o.y ?? o.center?.y ?? 0
+      x: t.x ?? t.center?.x ?? 0,
+      y: t.y ?? t.center?.y ?? 0
     };
     if (canvas.regions?.placeables)
-      for (const t of canvas.regions.placeables) {
-        const n = t.document.name || t.document.label;
-        if (!(!n || n.toLowerCase().startsWith("unnamed")) && t.testPoint(e))
+      for (const o of canvas.regions.placeables) {
+        const n = o.document.name || o.document.label;
+        if (!(!n || n.toLowerCase().startsWith("unnamed")) && o.testPoint(e))
           return n;
       }
     if (canvas.drawings?.placeables)
-      for (const t of canvas.drawings.placeables) {
-        const n = t.document.text?.trim();
+      for (const o of canvas.drawings.placeables) {
+        const n = o.document.text?.trim();
         if (!n) continue;
-        const s = t.bounds;
+        const s = o.bounds;
         if (e.x >= s.x && e.x <= s.x + s.width && e.y >= s.y && e.y <= s.y + s.height)
           return n;
       }
@@ -129,19 +129,19 @@ class v {
    * @returns {string[]} List of room names
    */
   static getAllRooms() {
-    const o = /* @__PURE__ */ new Set();
-    if (!canvas?.ready) return Array.from(o);
+    const t = /* @__PURE__ */ new Set();
+    if (!canvas?.ready) return Array.from(t);
     if (canvas.regions?.placeables)
       for (const e of canvas.regions.placeables) {
-        const t = e.document.name || e.document.label;
-        t && !t.toLowerCase().startsWith("unnamed") && o.add(t);
+        const o = e.document.name || e.document.label;
+        o && !o.toLowerCase().startsWith("unnamed") && t.add(o);
       }
     if (canvas.drawings?.placeables)
       for (const e of canvas.drawings.placeables) {
-        const t = e.document.text?.trim();
-        t && o.add(t);
+        const o = e.document.text?.trim();
+        o && t.add(o);
       }
-    return o.size === 0 ? ["Library", "Study", "Hall", "Conservatory", "Billiard Room", "Ballroom", "Dining Room", "Kitchen", "Lounge"] : Array.from(o);
+    return t.size === 0 ? ["Library", "Study", "Hall", "Conservatory", "Billiard Room", "Ballroom", "Dining Room", "Kitchen", "Lounge"] : Array.from(t);
   }
 }
 class I {
@@ -150,16 +150,16 @@ class I {
    * @param {Combatant|TokenDocument} entity 
    * @returns {Object} Immutable turn log entry
    */
-  static recordTurnSnapshot(o) {
+  static recordTurnSnapshot(t) {
     if (!canvas?.ready) return null;
-    const e = o.token || o;
+    const e = t.token || t;
     if (!e) return null;
-    const t = e.id, n = e.name || "Unknown Character", s = v.getRoomAt(e), i = game.combat?.round || 1, r = game.combat?.turn || 0, d = this.getVisibleTokensFor(e), c = this.getTokensInRoom(s, t), l = {
+    const o = e.id, n = e.name || "Unknown Character", s = v.getRoomAt(e), i = game.combat?.round || 1, r = game.combat?.turn || 0, d = this.getVisibleTokensFor(e), c = this.getTokensInRoom(s, o), l = {
       id: foundry.utils.randomID(),
       timestamp: Date.now(),
       round: i,
       turn: r,
-      tokenId: t,
+      tokenId: o,
       actorName: n,
       room: s,
       coords: { x: Math.round(e.x), y: Math.round(e.y) },
@@ -175,13 +175,13 @@ class I {
    * @param {TokenDocument|Token} sourceToken 
    * @returns {Token[]} Tokens visible to sourceToken
    */
-  static getVisibleTokensFor(o) {
+  static getVisibleTokensFor(t) {
     const e = [];
     if (!canvas?.ready) return e;
-    const t = o.center || { x: o.x, y: o.y };
+    const o = t.center || { x: t.x, y: t.y };
     for (const n of canvas.tokens.placeables) {
-      if (n.id === o.id || !n.visible) continue;
-      const s = n.center || { x: n.x, y: n.y }, i = new Ray(t, s);
+      if (n.id === t.id || !n.visible) continue;
+      const s = n.center || { x: n.x, y: n.y }, i = new Ray(o, s);
       canvas.walls?.checkCollision(i, { type: "sight", mode: "any" }) || e.push(n);
     }
     return e;
@@ -192,25 +192,25 @@ class I {
    * @param {string} excludeTokenId 
    * @returns {Token[]}
    */
-  static getTokensInRoom(o, e = null) {
-    return canvas?.ready ? canvas.tokens.placeables.filter((t) => e && t.id === e ? !1 : v.getRoomAt(t) === o) : [];
+  static getTokensInRoom(t, e = null) {
+    return canvas?.ready ? canvas.tokens.placeables.filter((o) => e && o.id === e ? !1 : v.getRoomAt(o) === t) : [];
   }
   /**
    * Appends log entry to Foundry world flags.
    * @param {Object} entry 
    */
-  static async appendTurnLog(o) {
+  static async appendTurnLog(t) {
     if (!game.user.isGM) return;
     const e = game.settings.get(a.ID, a.FLAGS.TURN_LOGS) || [];
-    e.push(o), await game.settings.set(a.ID, a.FLAGS.TURN_LOGS, e);
+    e.push(t), await game.settings.set(a.ID, a.FLAGS.TURN_LOGS, e);
   }
   /**
    * Gets travel history for a specific token.
    * @param {string} tokenId 
    * @returns {Object[]}
    */
-  static getHistoryFor(o) {
-    return (game.settings.get(a.ID, a.FLAGS.TURN_LOGS) || []).filter((t) => t.tokenId === o);
+  static getHistoryFor(t) {
+    return (game.settings.get(a.ID, a.FLAGS.TURN_LOGS) || []).filter((o) => o.tokenId === t);
   }
 }
 class _ {
@@ -222,12 +222,12 @@ class _ {
    */
   buildGraph() {
     this.adjacencyMap.clear();
-    const o = v.getAllRooms();
-    for (const e of o)
+    const t = v.getAllRooms();
+    for (const e of t)
       this.adjacencyMap.set(e, /* @__PURE__ */ new Set());
-    for (let e = 0; e < o.length; e++)
-      for (let t = e + 1; t < o.length; t++) {
-        const n = o[e], s = o[t];
+    for (let e = 0; e < t.length; e++)
+      for (let o = e + 1; o < t.length; o++) {
+        const n = t[e], s = t[o];
         this.adjacencyMap.get(n).add(s), this.adjacencyMap.get(s).add(n);
       }
   }
@@ -236,8 +236,8 @@ class _ {
    * @param {string} roomName 
    * @returns {string[]}
    */
-  getAdjacentRooms(o) {
-    return this.adjacencyMap.has(o) || this.buildGraph(), Array.from(this.adjacencyMap.get(o) || []);
+  getAdjacentRooms(t) {
+    return this.adjacencyMap.has(t) || this.buildGraph(), Array.from(this.adjacencyMap.get(t) || []);
   }
   /**
    * Calculates rooms reachable within a given maximum step distance.
@@ -245,19 +245,19 @@ class _ {
    * @param {number} maxDistance 
    * @returns {string[]}
    */
-  getReachableRooms(o, e = 2) {
-    const t = /* @__PURE__ */ new Set([o]);
-    let n = /* @__PURE__ */ new Set([o]);
+  getReachableRooms(t, e = 2) {
+    const o = /* @__PURE__ */ new Set([t]);
+    let n = /* @__PURE__ */ new Set([t]);
     for (let s = 0; s < e; s++) {
       const i = /* @__PURE__ */ new Set();
       for (const r of n) {
         const d = this.getAdjacentRooms(r);
         for (const c of d)
-          t.has(c) || (t.add(c), i.add(c));
+          o.has(c) || (o.add(c), i.add(c));
       }
       n = i;
     }
-    return Array.from(t);
+    return Array.from(o);
   }
 }
 class D {
@@ -270,32 +270,32 @@ class D {
    * @param {Object} options - Travel context (co-occupants, history, target tools)
    * @returns {Object} { suggestedRoom, coTraveledWith, pathReason }
    */
-  planMovement(o, e = {}) {
-    const t = v.getRoomAt(o), n = e.coOccupants || [], s = e.travelHistory || [], i = e.targetToolRoom || null, r = game.settings.get(a.ID, a.SETTINGS.CO_TRAVEL_PROBABILITY) ?? 0.5, d = game.settings.get(a.ID, a.SETTINGS.NOVELTY_WEIGHT) ?? 0.7;
+  planMovement(t, e = {}) {
+    const o = v.getRoomAt(t), n = e.coOccupants || [], s = e.travelHistory || [], i = e.targetToolRoom || null, r = game.settings.get(a.ID, a.SETTINGS.CO_TRAVEL_PROBABILITY) ?? 0.5, d = game.settings.get(a.ID, a.SETTINGS.NOVELTY_WEIGHT) ?? 0.7;
     if (n.length > 0 && Math.random() < r) {
       const u = n[Math.floor(Math.random() * n.length)], h = e.partnerDestinations?.[u.id] || null;
-      if (h && h !== t)
+      if (h && h !== o)
         return {
           suggestedRoom: h,
           coTraveledWith: u.name,
           pathReason: `Co-traveling with ${u.name} (${Math.round(r * 100)}% odds triggered)`
         };
     }
-    if (i && i !== t && this.roomGraph.getAdjacentRooms(t).includes(i))
+    if (i && i !== o && this.roomGraph.getAdjacentRooms(o).includes(i))
       return {
         suggestedRoom: i,
         coTraveledWith: null,
         pathReason: `Seeking required crime tool in ${i}`
       };
-    const c = this.roomGraph.getReachableRooms(t, 1);
+    const c = this.roomGraph.getReachableRooms(o, 1);
     if (c.length === 0)
-      return { suggestedRoom: t, coTraveledWith: null, pathReason: "No reachable rooms" };
+      return { suggestedRoom: o, coTraveledWith: null, pathReason: "No reachable rooms" };
     const l = new Set(s.map((u) => u.room)), m = c.map((u) => {
-      const h = !l.has(u), O = u === t;
-      let M = 1;
-      return h ? M += d * 2 : O && (M *= 0.3), { room: u, weight: M };
+      const h = !l.has(u), O = u === o;
+      let w = 1;
+      return h ? w += d * 2 : O && (w *= 0.3), { room: u, weight: w };
     }), y = m.reduce((u, h) => u + h.weight, 0);
-    let T = Math.random() * y, f = t;
+    let T = Math.random() * y, f = o;
     for (const u of m) {
       if (T <= u.weight) {
         f = u.room;
@@ -311,19 +311,19 @@ class D {
     };
   }
 }
-class G {
+class N {
   /**
    * Evaluates if any NPC has met the isolation & tool criteria to commit the crime.
    * @returns {Object|null} Triggered crime result or null
    */
   static async evaluateCrimeOpportunity() {
     if (!game.user.isGM) return null;
-    const o = game.settings.get(a.ID, a.FLAGS.MYSTERY_STATE);
-    if (!o || o.status !== a.STATUS.IN_PROGRESS)
+    const t = game.settings.get(a.ID, a.FLAGS.MYSTERY_STATE);
+    if (!t || t.status !== a.STATUS.IN_PROGRESS)
       return null;
-    const { killerId: e, victimId: t, requiredWeapon: n, roomWeaponLocations: s } = o;
-    if (!e || !t) return null;
-    const i = canvas.tokens?.get(e), r = canvas.tokens?.get(t);
+    const { killerId: e, victimId: o, requiredWeapon: n, roomWeaponLocations: s } = t;
+    if (!e || !o) return null;
+    const i = canvas.tokens?.get(e), r = canvas.tokens?.get(o);
     if (!i || !r) return null;
     const d = v.getRoomAt(i), c = v.getRoomAt(r);
     if (d !== c || d === "Corridor") return null;
@@ -333,7 +333,7 @@ class G {
         l.push(n), await i.document.setFlag(a.ID, "acquiredTools", l), ui.notifications.info(`${a.TITLE}: ${i.name} secretly acquired the ${n} in the ${d}!`);
       else
         return null;
-    if (I.getVisibleTokensFor(i).filter((T) => T.id !== t).length > 0)
+    if (I.getVisibleTokensFor(i).filter((T) => T.id !== o).length > 0)
       return null;
     const y = {
       killerName: i.name,
@@ -344,7 +344,7 @@ class G {
       turn: game.combat?.turn || 0,
       timestamp: Date.now()
     };
-    return o.status = a.STATUS.CRIME_COMMITTED, o.solution = y, await game.settings.set(a.ID, a.FLAGS.MYSTERY_STATE, o), ui.notifications.warn(`${a.TITLE}: A foul crime has occurred in the ${d}! The investigation begins!`), r && await r.document.update({ overlayEffect: "icons/svg/skull.svg" }), y;
+    return t.status = a.STATUS.CRIME_COMMITTED, t.solution = y, await game.settings.set(a.ID, a.FLAGS.MYSTERY_STATE, t), ui.notifications.warn(`${a.TITLE}: A foul crime has occurred in the ${d}! The investigation begins!`), r && await r.document.update({ overlayEffect: "icons/svg/skull.svg" }), y;
   }
 }
 const b = [
@@ -512,18 +512,18 @@ class z {
    * @param {string} victimId 
    * @returns {Object} Complete mystery scenario configuration
    */
-  static generateScenario(o = "lord-hintz") {
-    const e = b.find((l) => l.id === o) || b[0], t = b.filter((l) => l.id !== e.id), n = t[Math.floor(Math.random() * t.length)], s = ["Candlestick", "Dagger", "Lead Pipe", "Revolver", "Rope", "Wrench", "Poison Vial"], i = s[Math.floor(Math.random() * s.length)], r = {};
+  static generateScenario(t = "lord-hintz") {
+    const e = b.find((l) => l.id === t) || b[0], o = b.filter((l) => l.id !== e.id), n = o[Math.floor(Math.random() * o.length)], s = ["Candlestick", "Dagger", "Lead Pipe", "Revolver", "Rope", "Wrench", "Poison Vial"], i = s[Math.floor(Math.random() * s.length)], r = {};
     for (const l of b)
       r[l.id] = {
         motive: this.MOTIVE_TYPES[Math.floor(Math.random() * this.MOTIVE_TYPES.length)],
         secret: `Holds a secret regarding ${e.name}'s affairs.`
       };
     const d = [], c = [];
-    for (let l = 0; l < t.length; l++)
-      for (let m = l + 1; m < t.length; m++) {
+    for (let l = 0; l < o.length; l++)
+      for (let m = l + 1; m < o.length; m++) {
         const y = Math.random();
-        y < 0.15 ? d.push({ char1: t[l].name, char2: t[m].name }) : y > 0.85 && c.push({ char1: t[l].name, char2: t[m].name });
+        y < 0.15 ? d.push({ char1: o[l].name, char2: o[m].name }) : y > 0.85 && c.push({ char1: o[l].name, char2: o[m].name });
       }
     return {
       killerId: n.id,
@@ -546,10 +546,10 @@ class H {
    * @param {string} imagePath - Optional explicit image path (e.g. modules/hintz-manor/assets/maps/Hintz1f.png)
    * @returns {Promise<Scene>} Created Foundry Scene
    */
-  static async importMap(o, e, t = null) {
+  static async importMap(t, e, o = null) {
     if (!game.user.isGM) return null;
     const n = typeof e == "string" ? JSON.parse(e) : e, s = n.resolution?.pixels_per_grid || 100, i = n.resolution?.map_size?.x || 30, r = n.resolution?.map_size?.y || 30, d = i * s, c = r * s;
-    let l = t;
+    let l = o;
     !l && n.image && (l = n.image.startsWith("data:") ? n.image : `data:image/png;base64,${n.image}`);
     const m = [];
     if (Array.isArray(n.line_of_sight))
@@ -575,7 +575,7 @@ class H {
         }
       }
     const y = {
-      name: o,
+      name: t,
       width: d,
       height: c,
       padding: 0.1,
@@ -593,10 +593,10 @@ class H {
       tokenVision: !0,
       fogExploration: !0
     }, T = await Scene.create(y);
-    return ui.notifications.info(`Hintz Manor: Successfully imported scene "${o}" with background image and ${m.length} walls/doors!`), T;
+    return ui.notifications.info(`Hintz Manor: Successfully imported scene "${t}" with background image and ${m.length} walls/doors!`), T;
   }
 }
-class N {
+class G {
   /**
    * Determines the valid Actor document type for the active game system.
    * @returns {string} Valid actor type string for active system
@@ -609,8 +609,8 @@ class N {
       } catch (e) {
         console.warn("Hintz Manor | Error querying Beaver System Interface:", e);
       }
-    const o = game.system?.documentTypes?.Actor || [];
-    return o.includes("npc") ? "npc" : o.includes("character") ? "character" : o.includes("person") ? "person" : o[0] || "npc";
+    const t = game.system?.documentTypes?.Actor || [];
+    return t.includes("npc") ? "npc" : t.includes("character") ? "character" : t.includes("person") ? "person" : t[0] || "npc";
   }
   /**
    * Imports all 13 NPC Actors into the active Foundry world if they do not exist.
@@ -618,29 +618,29 @@ class N {
    */
   static async importAllActors() {
     if (!game.user.isGM) return [];
-    const o = this.getValidActorType();
-    console.log(`Hintz Manor | System-agnostic Actor creation using type "${o}" for system "${game.system.id}".`);
+    const t = this.getValidActorType();
+    console.log(`Hintz Manor | System-agnostic Actor creation using type "${t}" for system "${game.system.id}".`);
     const e = [];
-    for (const t of b) {
-      let n = game.actors.find((s) => s.name === t.name);
+    for (const o of b) {
+      let n = game.actors.find((s) => s.name === o.name);
       if (!n)
         try {
           n = await Actor.create({
-            name: t.name,
-            type: o,
-            img: t.avatar || "icons/svg/mystery-man.svg",
+            name: o.name,
+            type: t,
+            img: o.avatar || "icons/svg/mystery-man.svg",
             flags: {
               "hintz-manor": {
-                npcId: t.id,
-                role: t.role,
-                category: t.category,
-                personality: t.personality,
-                startingRoom: t.startingRoom
+                npcId: o.id,
+                role: o.role,
+                category: o.category,
+                personality: o.personality,
+                startingRoom: o.startingRoom
               }
             }
           });
         } catch (s) {
-          console.warn(`Hintz Manor | Could not create Actor ${t.name}:`, s);
+          console.warn(`Hintz Manor | Could not create Actor ${o.name}:`, s);
         }
       n && e.push(n);
     }
@@ -649,8 +649,8 @@ class N {
 }
 const { ApplicationV2: P, HandlebarsApplicationMixin: F } = foundry.applications.api;
 class S extends F(P) {
-  constructor(o = {}) {
-    super(o), this.activeTab = "setup";
+  constructor(t = {}) {
+    super(t), this.activeTab = "setup";
   }
   static DEFAULT_OPTIONS = {
     id: "hintz-manor-gm-panel",
@@ -678,9 +678,9 @@ class S extends F(P) {
       template: "modules/hintz-manor/templates/gm-panel.hbs"
     }
   };
-  async _prepareContext(o) {
-    const e = game.settings.get(a.ID, a.FLAGS.MYSTERY_STATE) || {}, t = game.settings.get(a.ID, a.FLAGS.TURN_LOGS) || [], n = canvas.tokens?.placeables.map((c) => ({ id: c.id, name: c.name })) || [], s = v.getAllRooms(), i = ["Candlestick", "Dagger", "Lead Pipe", "Revolver", "Rope", "Wrench", "Poison Vial"], r = b.map((c) => {
-      const l = t.filter((g) => g.actorName === c.name), m = Array.from(new Set(l.map((g) => g.room))), y = Array.from(new Set(l.flatMap((g) => g.visibleTokenNames || []))), T = canvas.tokens?.placeables.find((g) => g.name === c.name), f = T ? T.document.getFlag(a.ID, "acquiredTools") || [] : [];
+  async _prepareContext(t) {
+    const e = game.settings.get(a.ID, a.FLAGS.MYSTERY_STATE) || {}, o = game.settings.get(a.ID, a.FLAGS.TURN_LOGS) || [], n = canvas.tokens?.placeables.map((c) => ({ id: c.id, name: c.name })) || [], s = v.getAllRooms(), i = ["Candlestick", "Dagger", "Lead Pipe", "Revolver", "Rope", "Wrench", "Poison Vial"], r = b.map((c) => {
+      const l = o.filter((g) => g.actorName === c.name), m = Array.from(new Set(l.map((g) => g.room))), y = Array.from(new Set(l.flatMap((g) => g.visibleTokenNames || []))), T = canvas.tokens?.placeables.find((g) => g.name === c.name), f = T ? T.document.getFlag(a.ID, "acquiredTools") || [] : [];
       return {
         name: c.name,
         role: c.role,
@@ -711,7 +711,7 @@ class S extends F(P) {
       npcKnowledge: r,
       alliances: e.alliances || [],
       rivalries: e.rivalries || [],
-      turnLogs: t.slice(-25).reverse(),
+      turnLogs: o.slice(-25).reverse(),
       tokens: n,
       npcRoster: b,
       rooms: s,
@@ -721,15 +721,15 @@ class S extends F(P) {
       isCrimeCommitted: e.status === a.STATUS.CRIME_COMMITTED
     };
   }
-  static async _onSwitchTab(o, e) {
-    o.preventDefault(), this.activeTab = e.dataset.tab, this.render();
+  static async _onSwitchTab(t, e) {
+    t.preventDefault(), this.activeTab = e.dataset.tab, this.render();
   }
-  static async _onImportActors(o, e) {
-    o.preventDefault(), await N.importAllActors(), this.render();
+  static async _onImportActors(t, e) {
+    t.preventDefault(), await G.importAllActors(), this.render();
   }
-  static async _onInitializeMystery(o, e) {
-    o.preventDefault();
-    const t = this.element, n = t.querySelector('[name="killerId"]')?.value, s = t.querySelector('[name="victimId"]')?.value, i = t.querySelector('[name="requiredWeapon"]')?.value;
+  static async _onInitializeMystery(t, e) {
+    t.preventDefault();
+    const o = this.element, n = o.querySelector('[name="killerId"]')?.value, s = o.querySelector('[name="victimId"]')?.value, i = o.querySelector('[name="requiredWeapon"]')?.value;
     if (!n || !s || !i) {
       ui.notifications.error(`${a.TITLE}: Please select a Secret Killer, Victim, and Crime Weapon.`);
       return;
@@ -747,35 +747,35 @@ class S extends F(P) {
     };
     await game.settings.set(a.ID, a.FLAGS.MYSTERY_STATE, c), ui.notifications.info(`${a.TITLE}: Mystery initialized!`), this.render();
   }
-  static async _onRandomizeMystery(o, e) {
-    o.preventDefault();
-    const t = z.generateScenario("lord-hintz"), n = v.getAllRooms(), s = {
-      [t.requiredWeapon]: n[Math.floor(Math.random() * n.length)]
+  static async _onRandomizeMystery(t, e) {
+    t.preventDefault();
+    const o = z.generateScenario("lord-hintz"), n = v.getAllRooms(), s = {
+      [o.requiredWeapon]: n[Math.floor(Math.random() * n.length)]
     }, i = {
       status: a.STATUS.IN_PROGRESS,
-      killerId: t.killerId,
-      killerName: t.killerName,
-      victimId: t.victimId,
-      victimName: t.victimName,
-      requiredWeapon: t.requiredWeapon,
-      motives: t.characterMotives,
-      alliances: t.alliances,
-      rivalries: t.rivalries,
+      killerId: o.killerId,
+      killerName: o.killerName,
+      victimId: o.victimId,
+      victimName: o.victimName,
+      requiredWeapon: o.requiredWeapon,
+      motives: o.characterMotives,
+      alliances: o.alliances,
+      rivalries: o.rivalries,
       rooms: n,
       roomWeaponLocations: s,
       solution: null
     };
-    await N.importAllActors(), await game.settings.set(a.ID, a.FLAGS.MYSTERY_STATE, i), await game.settings.set(a.ID, a.FLAGS.TURN_LOGS, []), ui.notifications.info(`🎲 ${a.TITLE}: Full Game Reset! 13 Actors Imported, Mystery & Motives Randomized!`), this.render();
+    await G.importAllActors(), await game.settings.set(a.ID, a.FLAGS.MYSTERY_STATE, i), await game.settings.set(a.ID, a.FLAGS.TURN_LOGS, []), ui.notifications.info(`🎲 ${a.TITLE}: Full Game Reset! 13 Actors Imported, Mystery & Motives Randomized!`), this.render();
   }
-  static async _onImportOpenVTTMaps(o, e) {
-    o.preventDefault(), ui.notifications.info(`${a.TITLE}: Importing pre-built OpenVTT map scenes with background images...`);
-    const t = [
+  static async _onImportOpenVTTMaps(t, e) {
+    t.preventDefault(), ui.notifications.info(`${a.TITLE}: Importing pre-built OpenVTT map scenes with background images...`);
+    const o = [
       { name: "Hintz Manor 1F (Ground Floor)", file: "modules/hintz-manor/assets/maps/Hintz1f.dd2vtt", img: "modules/hintz-manor/assets/maps/Hintz1f.png" },
       { name: "Hintz Manor 2F (Upper Floor)", file: "modules/hintz-manor/assets/maps/Hintz2fa.dd2vtt", img: "modules/hintz-manor/assets/maps/Hintz2fa.png" },
       { name: "Hintz Manor Basement", file: "modules/hintz-manor/assets/maps/HintzBasement.dd2vtt", img: "modules/hintz-manor/assets/maps/HintzBasement.png" },
       { name: "Hintz Manor Roof", file: "modules/hintz-manor/assets/maps/HintzRoof.dd2vtt", img: "modules/hintz-manor/assets/maps/HintzRoof.png" }
     ];
-    for (const n of t)
+    for (const n of o)
       try {
         const s = await fetch(n.file);
         if (s.ok) {
@@ -786,8 +786,8 @@ class S extends F(P) {
         console.warn(`Could not import map ${n.file}:`, s);
       }
   }
-  static async _onResetMystery(o, e) {
-    o.preventDefault(), await game.settings.set(a.ID, a.FLAGS.MYSTERY_STATE, {
+  static async _onResetMystery(t, e) {
+    t.preventDefault(), await game.settings.set(a.ID, a.FLAGS.MYSTERY_STATE, {
       status: a.STATUS.SETUP,
       killerId: null,
       victimId: null,
@@ -820,8 +820,8 @@ class A extends V(U) {
       template: "modules/hintz-manor/templates/detective-notebook.hbs"
     }
   };
-  async _prepareContext(o) {
-    const e = w.getPlayerNotebook(), t = game.settings.get(a.ID, a.FLAGS.MYSTERY_STATE) || {}, n = game.settings.get(a.ID, a.FLAGS.TURN_LOGS) || [], s = b.map((m) => m.name), i = ["Candlestick", "Dagger", "Lead Pipe", "Revolver", "Rope", "Wrench", "Poison Vial"], r = v.getAllRooms(), d = s.map((m) => ({
+  async _prepareContext(t) {
+    const e = k.getPlayerNotebook(), o = game.settings.get(a.ID, a.FLAGS.MYSTERY_STATE) || {}, n = game.settings.get(a.ID, a.FLAGS.TURN_LOGS) || [], s = b.map((m) => m.name), i = ["Candlestick", "Dagger", "Lead Pipe", "Revolver", "Rope", "Wrench", "Poison Vial"], r = v.getAllRooms(), d = s.map((m) => ({
       name: m,
       isEliminated: e.eliminatedSuspects?.includes(m)
     })), c = i.map((m) => ({
@@ -837,21 +837,21 @@ class A extends V(U) {
       weaponItems: c,
       roomItems: l,
       turnLogs: n.slice(-20).reverse(),
-      isCrimeCommitted: t.status === a.STATUS.CRIME_COMMITTED
+      isCrimeCommitted: o.status === a.STATUS.CRIME_COMMITTED
     };
   }
-  static async _onToggleElimination(o, e) {
-    o.preventDefault();
-    const t = e.dataset.type, n = e.dataset.name, s = w.getPlayerNotebook(), r = {
+  static async _onToggleElimination(t, e) {
+    t.preventDefault();
+    const o = e.dataset.type, n = e.dataset.name, s = k.getPlayerNotebook(), r = {
       suspect: "eliminatedSuspects",
       weapon: "eliminatedWeapons",
       room: "eliminatedRooms"
-    }[t];
-    r && (s[r] = s[r] || [], s[r].includes(n) ? s[r] = s[r].filter((d) => d !== n) : s[r].push(n), await w.savePlayerNotebook(s), this.render());
+    }[o];
+    r && (s[r] = s[r] || [], s[r].includes(n) ? s[r] = s[r].filter((d) => d !== n) : s[r].push(n), await k.savePlayerNotebook(s), this.render());
   }
-  static async _onSubmitAccusation(o, e) {
-    o.preventDefault();
-    const t = this.element, n = t.querySelector('[name="accusedSuspect"]')?.value, s = t.querySelector('[name="accusedWeapon"]')?.value, i = t.querySelector('[name="accusedRoom"]')?.value, r = game.settings.get(a.ID, a.FLAGS.MYSTERY_STATE);
+  static async _onSubmitAccusation(t, e) {
+    t.preventDefault();
+    const o = this.element, n = o.querySelector('[name="accusedSuspect"]')?.value, s = o.querySelector('[name="accusedWeapon"]')?.value, i = o.querySelector('[name="accusedRoom"]')?.value, r = game.settings.get(a.ID, a.FLAGS.MYSTERY_STATE);
     if (!r?.solution) {
       ui.notifications.warn(`${a.TITLE}: The crime has not occurred yet! Keep investigating.`);
       return;
@@ -860,30 +860,32 @@ class A extends V(U) {
     n === d && s === c && i === l ? ui.notifications.info(`🎉 ACCUSATION CORRECT! ${game.user.name} solved the mystery! ${d} committed the crime in the ${l} with the ${c}!`) : ui.notifications.error(`❌ INCORRECT ACCUSATION! ${game.user.name}'s claim was proven false!`);
   }
 }
-let k = null, C = null;
+let M = null, C = null;
 class L {
   static renderSidebarButtons() {
-    const o = document.querySelector("#sidebar-tabs");
-    if (o) {
-      if (document.getElementById("hintz-manor-vertical-dock")?.remove(), document.getElementById("hintz-manor-dock")?.remove(), !document.getElementById("hm-tab-notebook")) {
-        const e = document.createElement("a");
-        e.id = "hm-tab-notebook", e.className = "item hintz-manor-sidebar-tab", e.setAttribute("data-tab", "hintz-notebook"), e.setAttribute("data-tooltip", "Detective Notebook"), e.setAttribute("aria-label", "Detective Notebook"), e.innerHTML = '<i class="fa-solid fa-book-skull"></i>', e.addEventListener("click", (t) => {
-          t.preventDefault(), t.stopPropagation(), C || (C = new A()), C.render(!0);
-        }), o.appendChild(e);
-      }
-      if (game.user.isGM && !document.getElementById("hm-tab-gm")) {
-        const e = document.createElement("a");
-        e.id = "hm-tab-gm", e.className = "item hintz-manor-sidebar-tab", e.setAttribute("data-tab", "hintz-gm-panel"), e.setAttribute("data-tooltip", "GM Mystery Control Center"), e.setAttribute("aria-label", "GM Mystery Control Center"), e.innerHTML = '<i class="fa-solid fa-masks-theater"></i>', e.addEventListener("click", (t) => {
-          t.preventDefault(), t.stopPropagation(), k || (k = new S()), k.render(!0);
-        }), o.appendChild(e);
-      }
-    }
+    document.getElementById("hm-tab-notebook")?.remove(), document.getElementById("hm-tab-gm")?.remove(), document.getElementById("hintz-manor-vertical-dock")?.remove();
+    let t = document.getElementById("hintz-manor-dock");
+    t || (t = document.createElement("div"), t.id = "hintz-manor-dock", document.body.appendChild(t));
+    let e = `
+      <button type="button" class="hm-dock-btn" id="hm-dock-notebook" title="Detective Notebook" aria-label="Detective Notebook">
+        <i class="fa-solid fa-book-skull"></i>
+      </button>
+    `;
+    game.user.isGM && (e += `
+        <button type="button" class="hm-dock-btn" id="hm-dock-gm" title="GM Mystery Control Center" aria-label="GM Mystery Control Center">
+          <i class="fa-solid fa-masks-theater"></i>
+        </button>
+      `), t.innerHTML = e, t.querySelector("#hm-dock-notebook")?.addEventListener("click", (o) => {
+      o.preventDefault(), C || (C = new A()), C.render(!0);
+    }), t.querySelector("#hm-dock-gm")?.addEventListener("click", (o) => {
+      o.preventDefault(), M || (M = new S()), M.render(!0);
+    });
   }
 }
 let R = null, E = null;
 const W = new D();
 Hooks.once("init", () => {
-  console.log(`${a.TITLE} | Initializing Hintz Manor Clue Engine (Foundry V14)...`), w.registerSettings(), game.hintzManor = {
+  console.log(`${a.TITLE} | Initializing Hintz Manor Clue Engine (Foundry V14)...`), k.registerSettings(), game.hintzManor = {
     openGM: () => {
       R || (R = new S()), R.render(!0);
     },
@@ -902,8 +904,8 @@ Hooks.on("renderSidebarTab", () => {
   L.renderSidebarButtons();
 });
 Hooks.on("getSceneControlButtons", (p) => {
-  const o = p.find((e) => e.name === "token");
-  o && (o.tools.push({
+  const t = p.find((e) => e.name === "token");
+  t && (t.tools.push({
     name: "hintz-manor-notebook",
     title: "Detective Notebook",
     icon: "fa-solid fa-book-skull",
@@ -911,7 +913,7 @@ Hooks.on("getSceneControlButtons", (p) => {
     onClick: () => {
       E || (E = new A()), E.render(!0);
     }
-  }), game.user.isGM && o.tools.push({
+  }), game.user.isGM && t.tools.push({
     name: "hintz-manor-gm-panel",
     title: "GM Mystery Control Panel",
     icon: "fa-solid fa-masks-theater",
@@ -921,23 +923,23 @@ Hooks.on("getSceneControlButtons", (p) => {
     }
   }));
 });
-Hooks.on("updateCombat", async (p, o) => {
+Hooks.on("updateCombat", async (p, t) => {
   if (!game.user.isGM) return;
   const e = p.combatant;
   if (!e) return;
-  const t = I.recordTurnSnapshot(e), n = e.token;
+  const o = I.recordTurnSnapshot(e), n = e.token;
   if (!n) return;
   if (!n.actor?.hasPlayerOwner) {
-    const i = I.getTokensInRoom(t?.room, n.id), r = I.getHistoryFor(n.id), d = game.settings.get(a.ID, a.FLAGS.MYSTERY_STATE), c = d?.requiredWeapon, l = d?.roomWeaponLocations?.[c] || null, m = W.planMovement(n, {
+    const i = I.getTokensInRoom(o?.room, n.id), r = I.getHistoryFor(n.id), d = game.settings.get(a.ID, a.FLAGS.MYSTERY_STATE), c = d?.requiredWeapon, l = d?.roomWeaponLocations?.[c] || null, m = W.planMovement(n, {
       coOccupants: i,
       travelHistory: r,
       targetToolRoom: l
     });
-    m.suggestedRoom && m.suggestedRoom !== t?.room && ui.notifications.info(`🧭 ${n.name} (${m.pathReason}): Suggested destination -> ${m.suggestedRoom}`);
+    m.suggestedRoom && m.suggestedRoom !== o?.room && ui.notifications.info(`🧭 ${n.name} (${m.pathReason}): Suggested destination -> ${m.suggestedRoom}`);
   }
-  await G.evaluateCrimeOpportunity();
+  await N.evaluateCrimeOpportunity();
 });
-Hooks.on("updateToken", async (p, o) => {
-  game.user.isGM && ("x" in o || "y" in o) && (I.recordTurnSnapshot(p), await G.evaluateCrimeOpportunity());
+Hooks.on("updateToken", async (p, t) => {
+  game.user.isGM && ("x" in t || "y" in t) && (I.recordTurnSnapshot(p), await N.evaluateCrimeOpportunity());
 });
 //# sourceMappingURL=main.js.map
